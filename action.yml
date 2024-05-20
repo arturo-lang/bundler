@@ -1,0 +1,12 @@
+name: 'Arturo Bundler'
+description: 'Bundle Arturo applications as executable binaries'
+runs:
+  using: "composite"
+  steps:
+    - name: "Setup Arturo"
+      uses: arturo-lang/arturo-action@main
+
+branding:
+  icon: 'package'
+  color: 'purple'
+    
