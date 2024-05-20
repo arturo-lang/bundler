@@ -26,8 +26,13 @@ jobs:
                     - ubuntu-latest
                     #- windows-latest
                     - macOS-12
+                    - macOS-14
+                mode:
+                    - full
+                    - mini
         steps:
             - uses: actions/checkout@v4
             - uses: ./
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
+                mode: ${{ matrix.mode }}
