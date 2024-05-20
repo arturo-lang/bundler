@@ -1,10 +1,17 @@
 name: 'Arturo Bundler'
 description: 'Bundle Arturo applications as executable binaries'
+inputs:
+    token:
+        description: >-
+            The GITHUB_TOKEN secret.
+        required: true
 runs:
   using: "composite"
   steps:
     - name: "Setup Arturo"
       uses: arturo-lang/arturo-action@main
+      with:
+        token: ${{ inputs.token }}
 
 branding:
   icon: 'package'
