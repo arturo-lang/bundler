@@ -55,9 +55,9 @@ runs:
             fi
 
             if [[ "${{ runner.arch }}" = "ARM64" || "${{ inputs.arch }}" = "arm64" ]]; then
-                echo "ARCHNAME='arm64'" >> $GITHUB_ENV
+                echo "ARCHNAME=arm64" >> $GITHUB_ENV
             else
-                echo "ARCHNAME='amd64'" >> $GITHUB_ENV
+                echo "ARCHNAME=amd64" >> $GITHUB_ENV
             fi
 
             OSNAME=${{ runner.os }}
