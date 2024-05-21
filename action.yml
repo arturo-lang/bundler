@@ -52,6 +52,7 @@ runs:
         - name: Generate executable
           run: |
             arturo --bundle ${{ inputs.entry }}
+          shell: bash
 
 branding:
     icon: 'package'
