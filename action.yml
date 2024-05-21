@@ -52,7 +52,8 @@ runs:
         - name: Generate executable
           run: |
             arturo --bundle ${{ inputs.entry }}
-            xbase=${${{ inputs.entry }}##*/}
+            entry="${{ inputs.entry }}"
+            xbase=${entry##*/}
             echo "xbase:"
             echo $xbase
             xpref=${xbase%.*}
