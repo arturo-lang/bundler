@@ -46,7 +46,7 @@ runs:
             xbase=${entry##*/}
             xpref=${xbase%.*}
             sudo chmod +x $xpref
-          shell: bash
+          shell: msys2 {0}
 
 branding:
     icon: 'package'
