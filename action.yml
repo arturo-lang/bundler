@@ -1,11 +1,6 @@
 name: 'Arturo Bundler'
 description: 'Bundle Arturo applications as executable binaries'
 inputs:
-    mode:
-        description: >-
-            The Arturo version to install
-            (one of: 'mini', 'full', 'web')
-        default: 'full'
     token:
         description: >-
             The GITHUB_TOKEN secret.
@@ -26,7 +21,6 @@ runs:
           uses: arturo-lang/arturo-action@main
           with: 
             token: ${{ inputs.token }}
-            mode: ${{ inputs.mode }}
             arch: ${{ inputs.arch }}
 
         - name: Generate executable (*nix)

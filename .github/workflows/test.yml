@@ -25,6 +25,8 @@ jobs:
                 include:
                     - {os: ubuntu-latest}
                     - {os: macos-12}
+                    - {os: macos-latest}
+                    - {os: windows-latest}
         steps:
             - uses: actions/checkout@v4
 
