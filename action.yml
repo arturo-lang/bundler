@@ -22,25 +22,25 @@ inputs:
 runs:
     using: "composite"
     steps:
-        - name: Cache ChooseNim
-          id: cache-choosenim
-          uses: actions/cache@v3
-          with:
-            path: ~/.choosenim
-            key: ${{ runner.os }}-choosenim-${{ steps.get-date.outputs.date }}
+        # - name: Cache ChooseNim
+        #   id: cache-choosenim
+        #   uses: actions/cache@v3
+        #   with:
+        #     path: ~/.choosenim
+        #     key: ${{ runner.os }}-choosenim-${{ steps.get-date.outputs.date }}
   
-        - name: Cache Nimble
-          id: cache-nimble
-          uses: actions/cache@v3
-          with:
-            path: ~/.nimble
-            key: ${{ runner.os }}-nimble-${{ hashFiles('*.nimble') }}
+        # - name: Cache Nimble
+        #   id: cache-nimble
+        #   uses: actions/cache@v3
+        #   with:
+        #     path: ~/.nimble
+        #     key: ${{ runner.os }}-nimble-${{ hashFiles('*.nimble') }}
 
-        - name: Install Nim
-          uses: jiro4989/setup-nim-action@v1
-          with:
-            nim-version: '2.0.4'
-            repo-token: ${{ inputs.token }}
+        # - name: Install Nim
+        #   uses: jiro4989/setup-nim-action@v1
+        #   with:
+        #     nim-version: '2.0.4'
+        #     repo-token: ${{ inputs.token }}
 
         - name: Install Arturo
           uses: arturo-lang/arturo-action@main
