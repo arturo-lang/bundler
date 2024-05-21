@@ -27,15 +27,6 @@ runs:
             token: ${{ inputs.token }}
             arch: ${{ inputs.arch }}
 
-        - name: Set shell
-          run: |
-            if [ "${{ runner.os }}" = "Windows" ]; then
-                echo "USESHELL='msys2 {0}'" >> $GITHUB_ENV
-            else
-                echo "USESHELL='bash'" >> $GITHUB_ENV
-            fi
-          shell: bash
-
         - name: Generate executable
           run: |
             if [ "${{ runner.os }}" = "Windows" ]; then
