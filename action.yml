@@ -36,16 +36,9 @@ runs:
         - name: Generate executable (Windows)
           if: runner.os == 'Windows'
           run: |
-            # mkdir nim
-            # curl -L https://nim-lang.org/download/nim-2.0.4_x64.zip -o dist/nim.zip
-            # 7z x dist/nim.zip -onim
             export PATH="${{ github.workspace }}/nim/nim-2.0.4/bin":$PATH
 
             arturo --bundle ${{ inputs.entry }}
-            # entry="${{ inputs.entry }}"
-            # xbase=${entry##*/}
-            # xpref=${xbase%.*}
-            # sudo chmod +x $xpref
           shell: msys2 {0}
 
 branding:
