@@ -54,7 +54,7 @@ runs:
                 echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
             fi
 
-            if [ "${{ runner.arch }}" = "ARM64"] || [ "${{ inputs.arch }}" = "arm64"]; then
+            if [[ "${{ runner.arch }}" = "ARM64" || "${{ inputs.arch }}" = "arm64" ]]; then
                 echo "ARCHNAME='arm64'"
             else
                 echo "ARCHNAME='amd64'"
