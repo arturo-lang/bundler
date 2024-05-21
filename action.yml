@@ -62,10 +62,7 @@ runs:
 
                 echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
             fi
-          shell: "${{ env.USESHELL }}"
-
-        
-            
+          shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
         # - name: Generate executable (*nix)
         #   if: runner.os != 'Windows'
