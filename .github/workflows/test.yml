@@ -52,14 +52,14 @@ jobs:
                 #ls $HOME/.arturo
                 #ls $HOME/.arturo/bin
                 arturo -v
-                arturo tests/test.art
+                arturo test.art
                 shell: bash
   
             - if: matrix.os != 'windows-latest'
               name: Run tests (*nix)
               run: |
                 arturo -v
-                arturo tests/test.art
+                arturo test.art
               shell: bash
 
             
