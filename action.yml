@@ -14,6 +14,10 @@ inputs:
         description: >-
             Entry file for the executable.
         required: true
+    target:
+        description: >-
+            The name of the final binary.
+        default: 'auto'
 runs:
     using: "composite"
     steps:
@@ -26,19 +30,27 @@ runs:
         - name: Generate executable (*nix)
           if: runner.os != 'Windows'
           run: |
-            arturo --bundle ${{ inputs.entry }}
-            entry="${{ inputs.entry }}"
-            xbase=${entry##*/}
-            xpref=${xbase%.*}
-            sudo chmod +x $xpref
+            if [ "${{ inputs.target }}" = "auto" ]; then
+	            arturo --bundle ${{ inputs.entry }}
+                entry="${{ inputs.entry }}"
+                xbase=${entry##*/}
+                xpref=${xbase%.*}
+                sudo chmod +x $xpref
+            else
+                arturo --bundle --as:${{ inputs.target }} ${{ inputs.entry }}
+                sudo chmod +x ${{ inputs.target }}
+            fi
           shell: bash
 
         - name: Generate executable (Windows)
           if: runner.os == 'Windows'
           run: |
             export PATH="${{ github.workspace }}/nim/nim-2.0.4/bin":$PATH
-
-            arturo --bundle ${{ inputs.entry }}
+            if [ "${{ inputs.target }}" = "auto" ]; then
+                arturo --bundle ${{ inputs.entry }}
+            else
+                arturo --bundle --as:${{ inputs.target }} ${{ inputs.entry }}
+            fi
           shell: msys2 {0}
 
 branding:
