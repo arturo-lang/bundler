@@ -31,7 +31,7 @@ runs:
           if: runner.os != 'Windows'
           run: |
             if [ "${{ inputs.target }}" = "auto" ]; then
-	            arturo --bundle ${{ inputs.entry }}
+                arturo --bundle ${{ inputs.entry }}
                 entry="${{ inputs.entry }}"
                 xbase=${entry##*/}
                 xpref=${xbase%.*}
