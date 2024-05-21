@@ -22,26 +22,6 @@ inputs:
 runs:
     using: "composite"
     steps:
-        # - name: Cache ChooseNim
-        #   id: cache-choosenim
-        #   uses: actions/cache@v3
-        #   with:
-        #     path: ~/.choosenim
-        #     key: ${{ runner.os }}-choosenim-${{ steps.get-date.outputs.date }}
-  
-        # - name: Cache Nimble
-        #   id: cache-nimble
-        #   uses: actions/cache@v3
-        #   with:
-        #     path: ~/.nimble
-        #     key: ${{ runner.os }}-nimble-${{ hashFiles('*.nimble') }}
-
-        # - name: Install Nim
-        #   uses: jiro4989/setup-nim-action@v1
-        #   with:
-        #     nim-version: '2.0.4'
-        #     repo-token: ${{ inputs.token }}
-
         - name: Install Arturo
           uses: arturo-lang/arturo-action@main
           with: 
@@ -49,8 +29,24 @@ runs:
             mode: ${{ inputs.mode }}
             arch: ${{ inputs.arch }}
 
-        - name: Generate executable
+        - name: Generate executable (*nix)
+          if: runner.os != 'Windows'
           run: |
+            arturo --bundle ${{ inputs.entry }}
+            entry="${{ inputs.entry }}"
+            xbase=${entry##*/}
+            xpref=${xbase%.*}
+            sudo chmod +x $xpref
+          shell: bash
+
+        - name: Generate executable (Windows)
+          if: runner.os == 'Windows'
+          run: |
+            mkdir nim
+            curl -L https://nim-lang.org/download/nim-2.0.4_x64.zip -o dist/nim.zip
+            7z x dist/nim.zip -onim
+            export PATH="${{ github.workspace }}/nim/nim-2.0.4/bin":$PATH
+
             arturo --bundle ${{ inputs.entry }}
             entry="${{ inputs.entry }}"
             xbase=${entry##*/}
