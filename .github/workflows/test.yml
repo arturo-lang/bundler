@@ -22,44 +22,18 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                os:
-                    - ubuntu-latest
-                    - windows-latest
-                    - macOS-12
-                    - macOS-14
-                mode:
-                    - full
-                    - mini
+                include:
+                    - {os: ubuntu-latest}
+                    - {os: macos-12}
         steps:
             - uses: actions/checkout@v4
+
             - uses: ./
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
-                mode: ${{ matrix.mode }}
+                entry: tests/testbundle.art
 
-            - if: matrix.os == 'windows-latest'
-              name: Run tests (Windows)
+            - name: Run tests
               run: |
-                echo "Current directory:"
-                pwd
-    
-                echo "Current path:"
-                echo $PATH
-    
-                echo "Current GITHUB_PATH:"
-                echo $GITHUB_PATH
-                #echo "$HOME/.arturo/bin" >> $GITHUB_PATH
-                #ls $HOME/.arturo
-                #ls $HOME/.arturo/bin
-                arturo -v
-                arturo test.art
-                shell: bash
-  
-            - if: matrix.os != 'windows-latest'
-              name: Run tests (*nix)
-              run: |
-                arturo -v
-                arturo test.art
-              shell: bash
-
+                ./testbundle
             
