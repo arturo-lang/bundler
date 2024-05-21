@@ -31,7 +31,7 @@ jobs:
             - uses: ./
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
-                entry: tests/testbundle
+                entry: tests/testbundle.art
 
             - name: Run tests
               run: |

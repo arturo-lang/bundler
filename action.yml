@@ -51,8 +51,10 @@ runs:
 
         - name: Generate executable
           run: |
-            arturo --bundle ${{ inputs.entry }}.art
-            sudo chmod +x ${{ inputs.entry }}
+            arturo --bundle ${{ inputs.entry }}
+            xbase=${${{ inputs.entry }}##*/}
+            xpref=${xbase%.*}
+            sudo chmod +x $xpref
           shell: bash
 
 branding:
