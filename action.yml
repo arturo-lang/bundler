@@ -43,12 +43,7 @@ runs:
                     sudo chmod +x $xpref
                 fi
 
-                if [ "${{ runner.os }}" = "Windows" ]; then
-                    echo "EXEFILE=$xpref.exe" >> $GITHUB_ENV
-                else
-                    echo "EXEFILE=$xpref" >> $GITHUB_ENV
-                fi
-                
+                echo "EXEFILE=$xpref" >> $GITHUB_ENV
             else
                 arturo --bundle --as:${{ inputs.target }} ${{ inputs.entry }}
 
@@ -56,11 +51,7 @@ runs:
                     sudo chmod +x ${{ inputs.target }}
                 fi
 
-                if [ "${{ runner.os }}" = "Windows" ]; then
-                    echo "EXEFILE='${{ inputs.target }}.exe'" >> $GITHUB_ENV
-                else
-                    echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
-                fi
+                echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
             fi
 
             if [ "${{ runner.arch }}" = "ARM64"] || [ "${{ inputs.arch }}" = "arm64"]; then
@@ -70,20 +61,24 @@ runs:
             fi
 
             OSNAME=${{ runner.os }}
-            OSNAMELOWER=${OSNAME,,}
+            OSNAMELOWER=$(arturo --evaluate "print lower {$OSNAME}")
             echo "OSNAME=$OSNAMELOWER" >> $GITHUB_ENV
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
         - name: Create artifact
           run: |
-            tar czf $EXEFILE-$ARCHNAME-$OSNAME.tar.gz $EXEFILE
+            if [ "${{ runner.os }}" = "Windows" ]; then
+                tar czf ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.tar.gz ${{ env.EXEFILE }}.exe
+            else
+                tar czf ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.tar.gz ${{ env.EXEFILE }}
+            fi
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
         - name: Upload Artifact
           uses: 'actions/upload-artifact@v1'
           with:
-            name: ${{ '$EXEFILE-$ARCHNAME-$OSNAME.tar.gz' }}
-            path: ${{ '$EXEFILE-$ARCHNAME-$OSNAME.tar.gz' }}
+            name: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.tar.gz
+            path: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.tar.gz
           
           
 
