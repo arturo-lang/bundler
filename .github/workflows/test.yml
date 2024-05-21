@@ -24,7 +24,7 @@ jobs:
             matrix:
                 os:
                     - ubuntu-latest
-                    #- windows-latest
+                    - windows-latest
                     - macOS-12
                     - macOS-14
                 mode:
@@ -36,3 +36,30 @@ jobs:
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
                 mode: ${{ matrix.mode }}
+
+            - if: matrix.os == 'windows-latest'
+              name: Run tests (Windows)
+              run: |
+                echo "Current directory:"
+                pwd
+    
+                echo "Current path:"
+                echo $PATH
+    
+                echo "Current GITHUB_PATH:"
+                echo $GITHUB_PATH
+                #echo "$HOME/.arturo/bin" >> $GITHUB_PATH
+                #ls $HOME/.arturo
+                #ls $HOME/.arturo/bin
+                arturo -v
+                arturo tests/test.art
+                shell: bash
+  
+            - if: matrix.os != 'windows-latest'
+              name: Run tests (*nix)
+              run: |
+                arturo -v
+                arturo tests/test.art
+              shell: bash
+
+            
