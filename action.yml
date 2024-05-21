@@ -43,7 +43,12 @@ runs:
                     sudo chmod +x $xpref
                 fi
 
-                echo "EXEFILE=$xpref" >> $GITHUB_ENV
+                if [ "${{ runner.os }}" = "Windows" ]; then
+                    echo "EXEFILE=$xpref.exe" >> $GITHUB_ENV
+                else
+                    echo "EXEFILE=$xpref" >> $GITHUB_ENV
+                fi
+                
             else
                 arturo --bundle --as:${{ inputs.target }} ${{ inputs.entry }}
 
@@ -51,9 +56,16 @@ runs:
                     sudo chmod +x ${{ inputs.target }}
                 fi
 
-                echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
+                if [ "${{ runner.os }}" = "Windows" ]; then
+                    echo "EXEFILE='${{ inputs.target }}.exe'" >> $GITHUB_ENV
+                else
+                    echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
+                fi
             fi
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
+
+        - name: Create artifact
+          
 
 branding:
     icon: 'package'
