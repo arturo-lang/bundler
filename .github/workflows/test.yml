@@ -34,9 +34,10 @@ jobs:
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
                 entry: tests/testbundle.art
+                target: testbundlex
 
             - name: Run tests
               run: |
-                ./testbundle
+                ./testbundlex
               shell: bash
             
