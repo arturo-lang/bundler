@@ -37,6 +37,6 @@ jobs:
 
             - name: Run tests
               run: |
-                ./testbundlex
+                ./testbundle
               shell: bash
             
