@@ -27,40 +27,82 @@ runs:
             token: ${{ inputs.token }}
             arch: ${{ inputs.arch }}
 
-        - name: Generate executable (*nix)
-          if: runner.os != 'Windows'
+        - name: Set shell
           run: |
+            if [ "${{ runner.os }}" = "Windows" ]; then
+                echo "USESHELL='msys2 {0}'" >> $GITHUB_ENV
+            else
+                echo "USESHELL='bash'" >> $GITHUB_ENV
+            fi
+          shell: bash
+
+        - name: Generate executable
+          run: |
+            if [ "${{ runner.os }}" = "Windows" ]; then
+                export PATH="${{ github.workspace }}/nim/nim-2.0.4/bin":$PATH
+            fi
+
             if [ "${{ inputs.target }}" = "auto" ]; then
                 arturo --bundle ${{ inputs.entry }}
                 entry="${{ inputs.entry }}"
                 xbase=${entry##*/}
                 xpref=${xbase%.*}
-                sudo chmod +x $xpref
+
+                if [ "${{ runner.os }}" != "Windows" ]; then
+                    sudo chmod +x $xpref
+                fi
 
                 echo "EXEFILE=$xpref" >> $GITHUB_ENV
             else
                 arturo --bundle --as:${{ inputs.target }} ${{ inputs.entry }}
-                sudo chmod +x ${{ inputs.target }}
+
+                if [ "${{ runner.os }}" != "Windows" ]; then
+                    sudo chmod +x ${{ inputs.target }}
+                fi
 
                 echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
             fi
-          shell: bash
+        shell: "$USESHELL"
 
-        - name: Generate executable (Windows)
-          if: runner.os == 'Windows'
-          run: |
-            export PATH="${{ github.workspace }}/nim/nim-2.0.4/bin":$PATH
-            if [ "${{ inputs.target }}" = "auto" ]; then
-                arturo --bundle ${{ inputs.entry }}
-                entry="${{ inputs.entry }}"
-                xbase=${entry##*/}
-                xpref=${xbase%.*}
-                echo "XPREF = $xpref"
-            else
-                arturo --bundle --as:${{ inputs.target }} ${{ inputs.entry }}
-                echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
-            fi
-          shell: msys2 {0}
+        
+            
+
+        # - name: Generate executable (*nix)
+        #   if: runner.os != 'Windows'
+        #   run: |
+        #     if [ "${{ inputs.target }}" = "auto" ]; then
+        #         arturo --bundle ${{ inputs.entry }}
+        #         entry="${{ inputs.entry }}"
+        #         xbase=${entry##*/}
+        #         xpref=${xbase%.*}
+        #         sudo chmod +x $xpref
+
+        #         echo "EXEFILE=$xpref" >> $GITHUB_ENV
+        #     else
+        #         arturo --bundle --as:${{ inputs.target }} ${{ inputs.entry }}
+        #         sudo chmod +x ${{ inputs.target }}
+
+        #         echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
+        #     fi
+        #   shell: bash
+
+        # - name: Generate executable (Windows)
+        #   if: runner.os == 'Windows'
+        #   run: |
+        #     export PATH="${{ github.workspace }}/nim/nim-2.0.4/bin":$PATH
+        #     if [ "${{ inputs.target }}" = "auto" ]; then
+        #         arturo --bundle ${{ inputs.entry }}
+        #         entry="${{ inputs.entry }}"
+        #         xbase=${entry##*/}
+        #         xpref=${xbase%.*}
+
+        #         echo "EXEFILE=$xpref" >> $GITHUB_ENV
+        #     else
+        #         arturo --bundle --as:${{ inputs.target }} ${{ inputs.entry }}
+
+        #         echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
+        #     fi
+        #   shell: msys2 {0}
 
 branding:
     icon: 'package'
