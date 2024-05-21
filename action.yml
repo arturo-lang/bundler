@@ -1,19 +1,59 @@
 name: 'Arturo Bundler'
 description: 'Bundle Arturo applications as executable binaries'
 inputs:
+    mode:
+        description: >-
+            The Arturo version to install
+            (one of: 'mini', 'full', 'web')
+        default: 'full'
     token:
         description: >-
             The GITHUB_TOKEN secret.
         required: true
+    arch:
+        description: >-
+            The architecture to build for.
+            (one of: 'x86', 'arm', 'arm64', 'amd64', 'native')
+        default: 'native'
+    entry: 
+        description: >-
+            Entry file for the executable.
+        required: true
 runs:
-  using: "composite"
-  steps:
-    - name: "Setup Arturo"
-      uses: arturo-lang/arturo-action@main
-      with:
-        token: ${{ inputs.token }}
+    using: "composite"
+    steps:
+        - name: Cache ChooseNim
+          id: cache-choosenim
+          uses: actions/cache@v3
+          with:
+            path: ~/.choosenim
+            key: ${{ runner.os }}-choosenim-${{ steps.get-date.outputs.date }}
+  
+        - name: Cache Nimble
+          id: cache-nimble
+          uses: actions/cache@v3
+          with:
+            path: ~/.nimble
+            key: ${{ runner.os }}-nimble-${{ hashFiles('*.nimble') }}
+
+        - name: Install Nim
+          uses: jiro4989/setup-nim-action@v1
+          with:
+            nim-version: '2.0.4'
+            repo-token: ${{ inputs.token }}
+
+        - name: Install Arturo
+          uses: arturo-lang/arturo-action@main
+          with: 
+            token: ${{ inputs.token }}
+            mode: ${{ inputs.mode }}
+            arch: ${{ inputs.arch }}
+
+        - name: Generate executable
+          run: |
+            arturo --bundle ${{ inputs.entry }}
 
 branding:
-  icon: 'package'
-  color: 'purple'
+    icon: 'package'
+    color: 'purple'
     
