@@ -62,7 +62,7 @@ runs:
 
                 echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
             fi
-        shell: "$USESHELL"
+          shell: "$USESHELL"
 
         
             
