@@ -71,14 +71,26 @@ jobs:
                     ${{ env.RELDESC }}
                 draft: false
                 prerelease: false
-                
-            - name: Upload Release Assets
-              id: upload-release-assets
-              uses: dwenegar/upload-release-assets@v1
+
+            - name: Upload release assets
+              run: |
+                set -x
+                assets=()
+                for asset in ./assets/*; do
+                  assets+=("-a" "$asset")
+                done
+                tag_name="${GITHUB_REF##*/}"
+                hub release create "${assets[@]}" -m "$tag_name" "$tag_name"
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                release_id: ${{ steps.create-release.outputs.id }}
-                assets_path: ./assets  
+                
+            # - name: Upload Release Assets
+            #   id: upload-release-assets
+            #   uses: dwenegar/upload-release-assets@v1
+            #   env:
+            #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            #   with:
+            #     release_id: ${{ steps.create-release.outputs.id }}
+            #     assets_path: ./assets  
                  
 
