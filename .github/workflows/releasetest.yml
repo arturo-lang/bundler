@@ -40,7 +40,7 @@ jobs:
         if: ${{ always() }}
         needs: Bundle
         steps:
-            - uses: arturo-lang/bundle-release@main
+            - uses: arturo-lang/bundler-releases@main
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 name: ${{ needs.Bundle.outputs.EXEFILE }}
