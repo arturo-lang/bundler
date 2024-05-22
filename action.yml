@@ -79,7 +79,7 @@ runs:
             fi
 
             if [ "${{ inputs.release }}" = "true" ]; then
-                if [ "${{ inputs.version}}" != "" ]; then
+                if [ "${{ inputs.version }}" = "" ]; then
                     ARCHV_VERS=$(arturo --evaluate "print replace {${{ github.ref_name }}} {/^v/} {}")
                     echo "VERSION=-$ARCHV_VERS" >> $GITHUB_ENV
                 fi
