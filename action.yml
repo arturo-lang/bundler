@@ -137,7 +137,7 @@ runs:
           id: upload-release-assets
           uses: dwenegar/upload-release-assets@v1
           env:
-            GITHUB_TOKEN: ${{ input.token }}
+            GITHUB_TOKEN: ${{ inputs.token }}
           with:
             release_id: ${{ steps.create-release.outputs.id }}
             assets_path: ./assets
