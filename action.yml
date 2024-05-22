@@ -91,7 +91,6 @@ runs:
                 fi
             fi
 
-
             OSNAMELOWER=$(arturo --evaluate "print lower {${{ runner.os }}}")
             echo "OSNAME=$OSNAMELOWER" >> $GITHUB_ENV
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
