@@ -74,12 +74,11 @@ jobs:
                 prerelease: false
                 
             - name: Upload Release Assets
-              env:
-                RELEASE: ${{ needs.test.outputs.RELEASE }}
               if: ${{ env.RELEASE == 'true' }}
               id: upload-release-assets
               uses: dwenegar/upload-release-assets@v1
               env:
+                RELEASE: ${{ needs.test.outputs.RELEASE }}
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                 release_id: ${{ steps.create-release.outputs.id }}
