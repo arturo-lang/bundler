@@ -124,7 +124,7 @@ runs:
           env:
             GITHUB_TOKEN: ${{ inputs.token }}
           with:
-            tag_name: ${{ github.ref }}
+            tag_name: ${{ github.ref_name }}
             release_name: "${{ env.EXEFILE }} ${{ env.VERS }}"
             body: |
                 ${{ env.EXEFILE }} ${{ env.VERS }} Release
