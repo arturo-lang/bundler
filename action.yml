@@ -99,11 +99,17 @@ runs:
             fi
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
+        - name: Post-process artifact (Release)
+          if: ${{ inputs.release }} == 'true'
+          run: |
+            zip -r ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.zip ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+          shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
+
         - name: Upload Artifact
           uses: 'actions/upload-artifact@v4'
           with:
             name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
-            path: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}    
+            path: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}${{ inputs.release == 'true' && '.zip' || '' }}    
 
 branding:
     icon: 'package'
