@@ -22,6 +22,14 @@ inputs:
         description: >-
             The version - in case you want to include it in the archive names.
         default: ''
+    release:
+        description: >-
+            Set to true, if it's running in a release build, to automatically package all assets.
+        default: false
+    release_description:
+        description: >-
+            The body for the releases (if `release` is set). If this is not set, then the `github.ref` will be used.
+        default: ''
 runs:
     using: "composite"
     steps:
@@ -70,6 +78,20 @@ runs:
                 echo "VERS=" >> $GITHUB_ENV
             fi
 
+            if [ "${{ inputs.release }}" = "true" ]; then
+                if [ "${{ inputs.version}}" != "" ]; then
+                    ARCHV_VERS=$(arturo --evaluate "print replace {${{ github.ref_name }}} {/^v/} {}")
+                    echo "VERS=$ARCHV_VERS" >> $GITHUB_ENV
+                fi
+
+                if [ "${{ inputs.release_description }}" = "" ]; then
+                    echo "RELDESC=${{ github.ref }}" >> $GITHUB_ENV
+                else
+                    echo "RELDESC=${{ inputs.release_description }}" >> $GITHUB_ENV
+                fi
+            fi
+
+
             OSNAMELOWER=$(arturo --evaluate "print lower {${{ runner.os }}}")
             echo "OSNAME=$OSNAMELOWER" >> $GITHUB_ENV
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
@@ -88,7 +110,38 @@ runs:
           uses: 'actions/upload-artifact@v4'
           with:
             name: ${{ env.EXEFILE }}${{ env.VERS }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
-            path: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}        
+            path: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}    
+
+        - name: Download Artifact
+          if: ${{ inputs.release }}
+          uses: actions/download-artifact@v2
+          with:
+            path: ./assets
+
+        - name: Create Release
+          if: ${{ inputs.release }}
+          id: create-release
+          uses: actions/create-release@v1
+          env:
+            GITHUB_TOKEN: ${{ inputs.token }}
+          with:
+            tag_name: ${{ github.ref }}
+            release_name: "${{ env.EXEFILE }} ${{ env.VERS }}"
+            body: |
+                ${{ env.EXEFILE }} ${{ env.VERS }} Release
+                ${{ env.RELDESC }}
+            draft: false
+            prerelease: false
+        
+        - name: Upload Release Assets
+          if: ${{ inputs.release }}
+          id: upload-release-assets
+          uses: dwenegar/upload-release-assets@v1
+          env:
+            GITHUB_TOKEN: ${{ input.token }}
+          with:
+            release_id: ${{ steps.create-release.outputs.id }}
+            assets_path: ./assets
 
 branding:
     icon: 'package'
