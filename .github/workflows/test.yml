@@ -55,12 +55,11 @@ jobs:
                 path: ./assets
 
             - name: Create Release
-              env:
-                RELEASE: ${{ needs.test.outputs.RELEASE }}
               if: ${{ env.RELEASE == 'true' }}
               id: create-release
               uses: actions/create-release@v1
               env:
+                RELEASE: ${{ needs.test.outputs.RELEASE }}
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 EXEFILE: ${{ needs.test.outputs.EXEFILE }}
                 VERS: ${{ needs.test.outputs.VERS }}
