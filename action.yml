@@ -64,6 +64,12 @@ runs:
                 echo "ARCHNAME=amd64" >> $GITHUB_ENV
             fi
 
+            if [ "${{ inputs.version}}" != "" ]; then
+                echo "VERS=-${{ inputs.version }}" >> $GITHUB_ENV
+            else
+                echo "VERS=" >> $GITHUB_ENV
+            fi
+
             OSNAMELOWER=$(arturo --evaluate "print lower {${{ runner.os }}}")
             echo "OSNAME=$OSNAMELOWER" >> $GITHUB_ENV
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
@@ -81,8 +87,8 @@ runs:
         - name: Upload Artifact
           uses: 'actions/upload-artifact@v4'
           with:
-            name: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
-            path: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}        
+            name: ${{ env.EXEFILE }}${{ env.VERS }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+            path: ${{ env.EXEFILE }}${{ env.VERS }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}        
 
 branding:
     icon: 'package'
