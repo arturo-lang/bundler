@@ -99,21 +99,26 @@ runs:
             fi
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
-        - name: Post-process artifact (Release)
-          if: ${{ inputs.release }} == 'true'
-          run: |
-            if [ "${{ runner.os }}" = "Windows" ]; then
-                zip -r ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.zip ${{ env.EXEFILE }}.exe
-            else
-                zip -r ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.zip ${{ env.EXEFILE }}
-            fi
-          shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
-
-        - name: Upload Artifact
+        - name: Upload Artifact (Normal)
+          if: ${{ inputs.release == 'false' }}
           uses: 'actions/upload-artifact@v4'
           with:
-            name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}${{ inputs.release == 'true' && '.zip' || '' }}
-            path: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}${{ inputs.release == 'true' && '.zip' || '' }}    
+            name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+            path: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+
+        - name: Upload Artifact (Release / *nix)
+          if: ${{ inputs.release == 'true' && runner.os != 'Windows' }}
+          uses: 'actions/upload-artifact@v4'
+          with:
+            name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+            path: ${{ env.EXEFILE }}
+
+        - name: Upload Artifact (Release / Windows)
+          if: ${{ inputs.release == 'true' && runner.os == 'Windows' }}
+          uses: 'actions/upload-artifact@v4'
+          with:
+            name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+            path: ${{ env.EXEFILE }}.exe
 
 branding:
     icon: 'package'
