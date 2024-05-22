@@ -82,7 +82,7 @@ runs:
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
         - name: Upload Artifact
-          uses: 'actions/upload-artifact@v1'
+          uses: 'actions/upload-artifact@v4'
           with:
             name: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
             path: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}        
