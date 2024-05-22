@@ -10,6 +10,7 @@
 <!--ts-->
    * [How do I use it?](#how-do-i-use-it)
       * [More options](#more-options)
+   * [How can I release an app?](#how-can-i-release-an-app)
    * [License](#license)
 <!--te-->
 
@@ -43,7 +44,27 @@ Based on the runner, the action will compile and setup the appropriate, native b
 | option | description |
 |--------|-------------|
 | target | change the name of the final binary (default: `'auto'` = use the same name as the entry script) |
-| version | set version number, to be included in the archive names (default: `''`) |
+| version | set version number, to be included in the archive names - in the case of releases, this will be extracted automatically from the release tag (default: `''`) |
+
+### How can I release an app?
+
+With Arturo's bundler and the appropriate setup, you can instantly offer binaries for all major OSes, as part of your GitHub repo's workflows.
+
+But, panic not! We've got you covered! 😉
+
+Actually it's very streamlined and easy:
+
+- create a `.github/` folder inside your repo
+- create a `workflows/` folder inside the above folder (in case it's not already there, obviously)
+- create a new file in `./github/workflows/` (name it `asyouwish.yml`)
+- copy the contents of [https://github.com/arturo-lang/bundler/blob/main/.github/workflows/testrelease.yml](https://github.com/arturo-lang/bundler/blob/main/.github/workflows/testrelease.yml)
+- change only the relevant part above for your own app (following the instructions [above^](#how-do-i-use-it)
+
+And done! 💥
+
+Next time you push a new `vX.Y.Z` tag, a new release will be automatically created, along with all the binaries of your app for Linux/macOS/Windows (and more coming?).
+
+Sounds amazing? It actually *is*! 😉🚀
 
 ------
 
