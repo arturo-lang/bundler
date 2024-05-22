@@ -108,7 +108,7 @@ runs:
         - name: Upload Artifact
           uses: 'actions/upload-artifact@v4'
           with:
-            name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+            name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}${{ inputs.release == 'true' && '.zip' || '' }}
             path: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}${{ inputs.release == 'true' && '.zip' || '' }}    
 
 branding:
