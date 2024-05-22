@@ -22,8 +22,8 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                include:
-                    - {os: ubuntu-latest}
+                os:
+                    - ubuntu-latest
                     # - {os: macos-12}
                     # - {os: macos-latest}
                     # - {os: windows-latest}
@@ -49,5 +49,6 @@ jobs:
             - uses: arturo-lang/bundler-releases@main
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
-                bundling: ${{ needs.test.outputs }}
+                name: ${{ needs.test.outputs.EXEFILE }}
+                version: ${{ needs.test.outputs.VERSION }}
            

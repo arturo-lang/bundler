@@ -24,12 +24,8 @@ inputs:
         default: ''
     release:
         description: >-
-            Set to true, if it's running in a release build, to automatically package all assets.
+            Prepare for release.
         default: 'false'
-    release_description:
-        description: >-
-            The body for the releases (if `release` is set). If this is not set, then the `github.ref` will be used.
-        default: ''
 runs:
     using: "composite"
     steps:
@@ -75,30 +71,18 @@ runs:
             fi
 
             if [ "${{ inputs.version }}" != "" ]; then
-                echo "VERS=-${{ inputs.version }}" >> $GITHUB_ENV
-                echo "VERS=-${{ inputs.version }}" >> $GITHUB_OUTPUT
+                echo "VERSION=-${{ inputs.version }}" >> $GITHUB_ENV
+                echo "VERSION=-${{ inputs.version }}" >> $GITHUB_OUTPUT
             else
-                echo "VERS=" >> $GITHUB_ENV
-                echo "VERS=" >> $GITHUB_OUTPUT
+                echo "VERSION=" >> $GITHUB_ENV
+                echo "VERSION=" >> $GITHUB_OUTPUT
             fi
 
             if [ "${{ inputs.release }}" = "true" ]; then
                 if [ "${{ inputs.version}}" != "" ]; then
                     ARCHV_VERS=$(arturo --evaluate "print replace {${{ github.ref_name }}} {/^v/} {}")
-                    echo "VERS=$ARCHV_VERS" >> $GITHUB_ENV
+                    echo "VERSION=$ARCHV_VERS" >> $GITHUB_ENV
                 fi
-
-                if [ "${{ inputs.release_description }}" = "" ]; then
-                    echo "RELDESC=${{ github.ref }}" >> $GITHUB_ENV
-                    echo "RELDESC=${{ github.ref }}" >> $GITHUB_OUTPUT
-                else
-                    echo "RELDESC=${{ inputs.release_description }}" >> $GITHUB_ENV
-                    echo "RELDESC=${{ inputs.release_description }}" >> $GITHUB_OUTPUT
-                fi
-
-                echo "RELEASE=true" >> $GITHUB_OUTPUT
-            else
-                echo "RELEASE=false" >> $GITHUB_OUTPUT
             fi
 
             OSNAMELOWER=$(arturo --evaluate "print lower {${{ runner.os }}}")
@@ -118,7 +102,7 @@ runs:
         - name: Upload Artifact
           uses: 'actions/upload-artifact@v4'
           with:
-            name: ${{ env.EXEFILE }}${{ env.VERS }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+            name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
             path: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}    
 
 branding:
