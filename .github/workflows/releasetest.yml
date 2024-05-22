@@ -11,14 +11,15 @@ concurrency:
  
 jobs:
     Bundle:
-        runs-on: ${{ matrix.os }}
-        strategy:
-            matrix:
-                os:
-                    - ubuntu-latest
-                    # - {os: macos-12}
-                    # - {os: macos-latest}
-                    # - {os: windows-latest}
+        runs-on: ubuntu-latest
+        # ${{ matrix.os }}
+        # strategy:
+        #     matrix:
+        #         os:
+        #             - ubuntu-latest
+        #             # - {os: macos-12}
+        #             # - {os: macos-latest}
+        #             # - {os: windows-latest}
         steps:
             - uses: actions/checkout@v4
             - uses: ./
@@ -30,7 +31,7 @@ jobs:
     Release:
         runs-on: ubuntu-latest
         if: ${{ always() }}
-        needs: [Bundle]
+        needs: Bundle
         steps:
             - uses: arturo-lang/bundler-releases@main
               with: 
