@@ -52,7 +52,7 @@ runs:
                 fi
 
                 echo "EXEFILE=$xpref" >> $GITHUB_ENV
-                echo "EXEFILE=$xpref" >> $GITHUB_OUTPUT
+                echo "name=$xpref" >> $GITHUB_ENV
             else
                 arturo --bundle --as:${{ inputs.target }} ${{ inputs.entry }}
 
@@ -61,7 +61,7 @@ runs:
                 fi
 
                 echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
-                echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_OUTPUT
+                echo "name=${{ inputs.target }}" >> $GITHUB_ENV
             fi
 
             if [[ "${{ runner.arch }}" = "ARM64" || "${{ inputs.arch }}" = "arm64" ]]; then
@@ -72,10 +72,10 @@ runs:
 
             if [ "${{ inputs.version }}" != "" ]; then
                 echo "VERSION=-${{ inputs.version }}" >> $GITHUB_ENV
-                echo "VERSION=-${{ inputs.version }}" >> $GITHUB_OUTPUT
+                echo "version=${{ inputs.version }}" >> $GITHUB_ENV
             else
                 echo "VERSION=" >> $GITHUB_ENV
-                echo "VERSION=" >> $GITHUB_OUTPUT
+                echo "version=" >> $GITHUB_ENV
             fi
 
             if [ "${{ inputs.release }}" = "true" ]; then

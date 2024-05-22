@@ -20,8 +20,8 @@ jobs:
                     # - macos-latest          # arm64 / M1
                     # - windows-latest
         outputs:
-            EXEFILE: ${{ steps.bundler.outputs.EXEFILE }}
-            VERSION: ${{ steps.bundler.outputs.VERSION }}
+            name: ${{ steps.bundler.outputs.name }}
+            version: ${{ steps.bundler.outputs.version }}
         steps:
             - uses: actions/checkout@v4
             - uses: ./
@@ -31,8 +31,8 @@ jobs:
                 entry: tests/testbundle.art
                 version: 1.0.0
             - run: |
-                echo "EXEFILE=${{ env.EXEFILE }}" >> $GITHUB_OUTPUT
-                echo "VERSION=${{ env.VERSION }}" >> $GITHUB_OUTPUT
+                echo "name=${{ env.name }}" >> $GITHUB_OUTPUT
+                echo "version=${{ env.version }}" >> $GITHUB_OUTPUT
               shell: bash
     
     Release:
@@ -44,5 +44,5 @@ jobs:
             - uses: arturo-lang/bundler-releases@main
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
-                name: ${{ needs.Bundle.outputs.EXEFILE }}
-                version: ${{ needs.Bundle.outputs.VERSION }}
+                name: ${{ needs.Bundle.outputs.name }}
+                version: ${{ needs.Bundle.outputs.version }}
