@@ -77,12 +77,6 @@ runs:
             else
                 cp ${{ env.EXEFILE }} ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
             fi
-            # if [ "${{ runner.os }}" = "Windows" ]; then
-                
-            #     #tar czf ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.tar.gz 
-            # else
-            #     tar czf ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.tar.gz ${{ env.EXEFILE }}
-            # fi
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
         - name: Upload Artifact
