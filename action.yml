@@ -1,5 +1,8 @@
 name: 'Arturo Bundler'
 description: 'Bundle Arturo applications as executable binaries'
+branding:
+    icon: package
+    color: purple
 inputs:
     token:
         description: >-
@@ -114,8 +117,4 @@ runs:
           with:
             name: ${{ env.FILENAME }}
             path: ${{ env.FILENAME }}${{ inputs.release == 'true' && '.zip' || '' }}
-
-branding:
-    icon: 'package'
-    color: 'purple'
     
