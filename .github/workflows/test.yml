@@ -46,41 +46,8 @@ jobs:
         if: ${{ always() }}
         needs: [test]
         steps:
-            - name: Download Artifact
-              env:
-                RELEASE: ${{ needs.test.outputs.RELEASE }}
-              if: ${{ env.RELEASE == 'true' }}
-              uses: actions/download-artifact@v2
-              with:
-                path: ./assets
-
-            - name: Create Release
-              if: ${{ env.RELEASE == 'true' }}
-              id: create-release
-              uses: actions/create-release@v1
-              env:
-                RELEASE: ${{ needs.test.outputs.RELEASE }}
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                EXEFILE: ${{ needs.test.outputs.EXEFILE }}
-                VERS: ${{ needs.test.outputs.VERS }}
-                RELDESC: ${{ needs.test.outputs.RELDESC }}
-              with:
-                tag_name: ${{ github.ref_name }}
-                release_name: "${{ env.EXEFILE }} ${{ env.VERS }}"
-                body: |
-                    ${{ env.EXEFILE }} ${{ env.VERS }} Release
-                    ${{ env.RELDESC }}
-                draft: false
-                prerelease: false
-                
-            - name: Upload Release Assets
-              if: ${{ env.RELEASE == 'true' }}
-              id: upload-release-assets
-              uses: dwenegar/upload-release-assets@v1
-              env:
-                RELEASE: ${{ needs.test.outputs.RELEASE }}
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                release_id: ${{ steps.create-release.outputs.id }}
-                assets_path: ./assets
+            - uses: ./subaction/
+              with: 
+                token: ${{ secrets.GITHUB_TOKEN }}
+                bundling: ${{ needs.test.outputs }}
             
