@@ -102,7 +102,11 @@ runs:
         - name: Post-process artifact (Release)
           if: ${{ inputs.release }} == 'true'
           run: |
-            zip -r ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.zip ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+            if [ "${{ runner.os }}" = "Windows" ]; then
+                zip -r ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.zip ${{ env.EXEFILE }}.exe
+            else
+                zip -r ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.zip ${{ env.EXEFILE }}
+            fi
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
         - name: Upload Artifact
