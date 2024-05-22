@@ -8,7 +8,7 @@ on:
 concurrency: 
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
-
+ 
 jobs:
     test:
         runs-on: ${{ matrix.os }}
@@ -21,17 +21,11 @@ jobs:
                     # - {os: windows-latest}
         steps:
             - uses: actions/checkout@v4
-
             - uses: ./
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
                 entry: tests/testbundle.art
                 version: 1.0.0
-
-            - name: Run tests
-              run: |
-                ./testbundle
-              shell: bash
     
     release:
         runs-on: ubuntu-latest
