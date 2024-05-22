@@ -1,9 +1,14 @@
 name: Release Arturo app
 
+env:
+  app-name: testbundlex
+  app-entry: tests/testbundle.art
+  app-description: 
+
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+    push:
+      tags:
+        - 'v*.*.*'
 
 concurrency: 
     group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,22 +24,14 @@ jobs:
                     # - macos-12              # amd64
                     # - macos-latest          # arm64 / M1
                     # - windows-latest
-        outputs:
-            name: ${{ steps.bundler.outputs.name }}
-            version: ${{ steps.bundler.outputs.version }}
         steps:
             - uses: actions/checkout@v4
             - uses: ./
-              id: bundler
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
-                entry: tests/testbundle.art
-                version: 1.0.0
+                entry: ${{ env.app-entry }}
+                target: ${{ env.app-name}}
                 release: 'true'
-            - run: |
-                echo "name=${{ env.name }}" >> $GITHUB_OUTPUT
-                echo "version=${{ env.version }}" >> $GITHUB_OUTPUT
-              shell: bash
     
     Release:
         runs-on: ubuntu-latest
@@ -45,5 +42,5 @@ jobs:
             - uses: arturo-lang/bundler-releases@main
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
-                name: ${{ needs.Bundle.outputs.name }}
-                version: ${{ needs.Bundle.outputs.version }}
+                name: ${{ env.app-name }}
+                description: ${{ env.app-description }}

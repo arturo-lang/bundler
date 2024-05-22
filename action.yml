@@ -91,25 +91,25 @@ runs:
 
         - name: Create artifact
           run: |
-            mkdir ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+            mkdir ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
             if [ "${{ runner.os }}" = "Windows" ]; then
-                cp ${{ env.EXEFILE }}.exe ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+                cp ${{ env.EXEFILE }}.exe ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
             else
-                cp ${{ env.EXEFILE }} ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+                cp ${{ env.EXEFILE }} ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
             fi
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
         - name: Post-process artifact (Release)
           if: ${{ inputs.release }} == 'true'
           run: |
-            zip -r ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.zip ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+            zip -r ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.zip ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
         - name: Upload Artifact
           uses: 'actions/upload-artifact@v4'
           with:
             name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}${{ inputs.release == 'true' && '.zip' || '' }}
-            path: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}${{ inputs.release == 'true' && '.zip' || '' }}    
+            path: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}${{ inputs.release == 'true' && '.zip' || '' }}    
 
 branding:
     icon: 'package'
