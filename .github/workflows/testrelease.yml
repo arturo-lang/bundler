@@ -1,9 +1,16 @@
-name: Release Arturo app
-
+##############################################
+# App information
+##############################################
 env:
-  app-name: testbundlex
-  app-entry: tests/testbundle.art
-  app-description: 
+    app-name: testbundle
+    app-entry: tests/testbundle.art
+    app-notes: 
+##############################################
+
+# > if there is no serious reason, better not
+#   change anything below this line! ;-)
+
+name: Release Arturo app
 
 on:
     push:
@@ -13,17 +20,17 @@ on:
 concurrency: 
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
- 
+
 jobs:
     Bundle:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
                 os:
-                    - ubuntu-latest 
-                    # - macos-12              # amd64
-                    # - macos-latest          # arm64 / M1
-                    # - windows-latest
+                    - ubuntu-latest       # Linux - amd64
+                    - macos-12            # macOS - amd64
+                    - macos-latest        # macOS - arm64/M1
+                    - windows-latest      # Windows - amd64
         steps:
             - uses: actions/checkout@v4
             - uses: ./
@@ -32,7 +39,7 @@ jobs:
                 entry: ${{ env.app-entry }}
                 target: ${{ env.app-name}}
                 release: 'true'
-    
+
     Release:
         runs-on: ubuntu-latest
         if: ${{ always() }}
@@ -43,4 +50,4 @@ jobs:
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 name: ${{ env.app-name }}
-                description: ${{ env.app-description }}
+                description: ${{ env.app-notes }}

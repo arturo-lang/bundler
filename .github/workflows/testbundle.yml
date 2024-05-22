@@ -18,15 +18,15 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    test:
+    Bundle:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
                 os:
                     - ubuntu-latest
-                    # - {os: macos-12}
-                    # - {os: macos-latest}
-                    # - {os: windows-latest}
+                    - macos-12
+                    - macos-latest
+                    - windows-latest
         steps:
             - uses: actions/checkout@v4
 
