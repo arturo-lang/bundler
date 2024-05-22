@@ -58,13 +58,19 @@ Actually it's very streamlined and easy:
 - create a `workflows/` folder inside the above folder (in case it's not already there, obviously)
 - create a new file in `./github/workflows/` (name it `asyouwish.yml`)
 - copy the contents of [https://github.com/arturo-lang/bundler/blob/main/.github/workflows/testrelease.yml](https://github.com/arturo-lang/bundler/blob/main/.github/workflows/testrelease.yml)
-- change only the relevant part above for your own app (following the instructions [above^](#how-do-i-use-it)
+- change only the relevant part above for your own app
+
+> [!NOTE]
+> The configuration you have to complete mainly includes 3 fields:
+>  - `app-name:` The name of your binary as it will appear
+>  - `app-entry:` The "entry point" of your app (see [above^](#how-do-i-use-it))
+>  - `app-notes:` (Optionally) add some description that will appear at the bottom of the release
 
 And done! 💥
 
 Next time you push a new `vX.Y.Z` tag, a new release will be automatically created, along with all the binaries of your app for Linux/macOS/Windows (and more coming?).
 
-Sounds amazing? It actually *is*! 😉🚀
+Sounds amazing? It actually *is*! 🚀
 
 ------
 
