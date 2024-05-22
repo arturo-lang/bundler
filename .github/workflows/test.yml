@@ -1,4 +1,4 @@
-name: Bundler
+name: Bundle Arturo app
 
 on:
     push:
@@ -40,15 +40,4 @@ jobs:
               run: |
                 ./testbundle
               shell: bash
-     
-    release:
-        runs-on: ubuntu-latest
-        if: ${{ always() }}
-        needs: [test]
-        steps:
-            - uses: arturo-lang/bundler-releases@main
-              with: 
-                token: ${{ secrets.GITHUB_TOKEN }}
-                name: ${{ needs.test.outputs.EXEFILE }}
-                version: ${{ needs.test.outputs.VERSION }}
            

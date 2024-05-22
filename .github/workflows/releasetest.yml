@@ -1,4 +1,4 @@
-name: "Release Arturo application"
+name: Release Arturo app
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
             - uses: arturo-lang/bundler-releases@main
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
-                name: ${{ needs.test.outputs.EXEFILE }}
-                version: ${{ needs.test.outputs.VERSION }}
+                name: ${{ needs.Bundle.outputs.EXEFILE }}
+                version: ${{ needs.Bundle.outputs.VERSION }}
                  
 
