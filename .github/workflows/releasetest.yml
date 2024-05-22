@@ -30,9 +30,9 @@ jobs:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 entry: tests/testbundle.art
                 version: 1.0.0
-
             - run: |
-                echo ${{ steps.bundler.outputs.EXEFILE }}
+                echo "EXEFILE=${{ env.EXEFILE }}" >> $GITHUB_OUTPUT
+                echo "VERSION=${{ env.VERSION }}" >> $GITHUB_OUTPUT
               shell: bash
     
     Release:
@@ -40,6 +40,7 @@ jobs:
         if: ${{ always() }}
         needs: Bundle
         steps:
+            - uses: actions/checkout@v4
             - uses: arturo-lang/bundler-releases@main
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
