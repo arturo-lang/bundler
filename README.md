@@ -79,9 +79,11 @@ Sounds amazing? It actually *is*! 🚀
 
 If you had set up everything properly and come across a `Resource not accessible by integration` error at the last step, chances are you should simply give the action all necessary privileges.
 
-How? Simply go to your repo's *Settings* page, and then click on *Actions*. At the very bottom of the page, set your actions to have Read/Write permissions:
+How? Just go to your repo's *Settings* page, and then click on *Actions*. At the very bottom of the page, set your actions to have Read/Write permissions:
 
 ![set read write permissions](docs/settings.png)
+
+And... ready to rock'n'roll!
 
 ------
 
