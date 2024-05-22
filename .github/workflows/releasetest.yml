@@ -10,7 +10,7 @@ concurrency:
     cancel-in-progress: true
  
 jobs:
-    test:
+    Bundle:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
@@ -27,10 +27,10 @@ jobs:
                 entry: tests/testbundle.art
                 version: 1.0.0
     
-    release:
+    Release:
         runs-on: ubuntu-latest
         if: ${{ always() }}
-        needs: [test]
+        needs: [Bundle]
         steps:
             - uses: arturo-lang/bundler-releases@main
               with: 
