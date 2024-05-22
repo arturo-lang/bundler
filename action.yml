@@ -91,16 +91,17 @@ runs:
 
         - name: Create artifact
           run: |
-            echo "FILENAME=${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}" >> $GITHUB_ENV
+            FILENAME="${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}"
+            echo "FILENAME=$FILENAME" >> $GITHUB_ENV
             
-            mkdir ${{ env.FILENAME }}
+            mkdir $FILENAME
             if [ "${{ runner.os }}" = "Windows" ]; then
-                cp ${{ env.EXEFILE }}.exe ${{ env.FILENAME }}
+                cp ${{ env.EXEFILE }}.exe $FILENAME
             else
-                cp ${{ env.EXEFILE }} ${{ env.FILENAME }}
+                cp ${{ env.EXEFILE }} $FILENAME
             fi
             if [ "${{ inputs.release }}" = "true" ]; then
-                zip -r ${{ env.FILENAME }}.zip ${{ env.FILENAME }}
+                zip -r $FILENAME.zip $FILENAME
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
         - name: Upload Artifact (Normal)
