@@ -77,7 +77,7 @@ Sounds amazing? It actually *is*! 🚀
 
 #### I have integrated the Release workflow, but it fails at the very last step!
 
-If you had set up everything properly and come across a `Resource not accessible by integration` error at the last step, chances are you should simple give the action all necessary privileges.
+If you had set up everything properly and come across a `Resource not accessible by integration` error at the last step, chances are you should simply give the action all necessary privileges.
 
 How? Simply go to your repo's *Settings* page, and then click on *Actions*. At the very bottom of the page, set your actions to have Read/Write permissions:
 
