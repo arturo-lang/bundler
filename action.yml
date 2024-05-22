@@ -91,20 +91,24 @@ runs:
 
         - name: Create artifact
           run: |
-            mkdir ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+            echo "FILENAME=${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}" >> $GITHUB_ENV
+            
+            mkdir ${{ env.FILENAME }}
             if [ "${{ runner.os }}" = "Windows" ]; then
-                cp ${{ env.EXEFILE }}.exe ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+                cp ${{ env.EXEFILE }}.exe ${{ env.FILENAME }}
             else
-                cp ${{ env.EXEFILE }} ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+                cp ${{ env.EXEFILE }} ${{ env.FILENAME }}
             fi
+            if [ "${{ inputs.release }}" = "true" ]; then
+                zip -r ${{ env.FILENAME }}.zip ${{ env.FILENAME }}
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
         - name: Upload Artifact (Normal)
           #if: ${{ inputs.release == 'false' }}
           uses: 'actions/upload-artifact@v4'
           with:
-            name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
-            path: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+            name: ${{ env.FILENAME }}
+            path: ${{ env.FILENAME }}${{ inputs.release == 'true' && '.zip' || '' }}
 
         # - name: Upload Artifact (Release / *nix)
         #   if: ${{ inputs.release == 'true' && runner.os != 'Windows' }}
