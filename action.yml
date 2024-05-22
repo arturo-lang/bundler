@@ -64,8 +64,7 @@ runs:
                 echo "ARCHNAME=amd64" >> $GITHUB_ENV
             fi
 
-            OSNAME=${{ runner.os }}
-            OSNAMELOWER=$(arturo --evaluate "print lower {$OSNAME}")
+            OSNAMELOWER=$(arturo --evaluate "print lower {${{ runner.os }}}")
             echo "OSNAME=$OSNAMELOWER" >> $GITHUB_ENV
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
