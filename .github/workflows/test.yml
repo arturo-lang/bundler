@@ -34,6 +34,7 @@ jobs:
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
                 entry: tests/testbundle.art
+                version: 1.0.0
 
             - name: Run tests
               run: |
