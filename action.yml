@@ -101,9 +101,13 @@ runs:
                 cp ${{ env.EXEFILE }} $FILENAME
             fi
             if [ "${{ inputs.release }}" = "true" ]; then
-                zip -r $FILENAME.zip $FILENAME
+                if [ "${{ runner.os }}" = "Windows" ]; then
+                    7z a $FILENAME.zip $FILENAME
+                else
+                    zip -r $FILENAME.zip $FILENAME
+                fi
             fi
-          shell: bash
+          shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
         - name: Upload Artifact
           uses: 'actions/upload-artifact@v4'
