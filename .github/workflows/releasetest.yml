@@ -16,9 +16,9 @@ jobs:
             matrix:
                 os:
                     - ubuntu-latest 
-                    - macos-12              # amd64
-                    - macos-latest          # arm64 / M1
-                    - windows-latest
+                    # - macos-12              # amd64
+                    # - macos-latest          # arm64 / M1
+                    # - windows-latest
         outputs:
             EXEFILE: ${{ steps.bundler.outputs.EXEFILE }}
             VERSION: ${{ steps.bundler.outputs.VERSION }}
@@ -30,67 +30,18 @@ jobs:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 entry: tests/testbundle.art
                 version: 1.0.0
+
+            - run: |
+                echo ${{ steps.bundler.outputs.EXEFILE }}
+              shell: bash
     
     Release:
         runs-on: ubuntu-latest
         if: ${{ always() }}
         needs: Bundle
         steps:
-            - name: Download Artifact
-              uses: actions/download-artifact@v4
+            - uses: arturo-lang/bundle-release@main
               with:
-                path: ./assets
-                github-token: ${{ secrets.GITHUB_TOKEN }}
-
-            - name: Debug environment
-              run: |
-                    echo "NAME: ${{ needs.Bundle.outputs.EXEFILE }}"
-                    echo "VERSION: ${{ needs.Bundle.outputs.VERSION }}"
-                    ls ./assets
-              shell: bash
-
-            - name: Fetch description
-              run: |
-                if [ "" = "" ]; then
-                    echo "RELDESC=${{ github.ref }}" >> $GITHUB_ENV
-                else
-                    echo "RELDESC=" >> $GITHUB_ENV
-                fi
-              shell: bash
-
-            - name: Create Release
-              id: create-release
-              uses: actions/create-release@v1
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                tag_name: ${{ github.ref_name }}
-                release_name: "${{ needs.Bundle.outputs.EXEFILE }} ${{ needs.Bundle.outputs.VERSION }}"
-                body: |
-                    ${{ needs.Bundle.outputs.EXEFILE }} ${{ needs.Bundle.outputs.VERSION }} Release
-                    ${{ env.RELDESC }}
-                draft: false
-                prerelease: false
-
-            - name: Upload release assets
-              run: |
-                set -x
-                assets=()
-                for asset in ./assets/*; do
-                  assets+=("-a" "$asset")
-                done
-                tag_name="${GITHUB_REF##*/}"
-                hub release create "${assets[@]}" -m "$tag_name" "$tag_name"
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                
-            # - name: Upload Release Assets
-            #   id: upload-release-assets
-            #   uses: dwenegar/upload-release-assets@v1
-            #   env:
-            #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            #   with:
-            #     release_id: ${{ steps.create-release.outputs.id }}
-            #     assets_path: ./assets  
-                 
-
+                token: ${{ secrets.GITHUB_TOKEN }}
+                name: ${{ needs.Bundle.outputs.EXEFILE }}
+                version: ${{ needs.Bundle.outputs.VERSION }}
