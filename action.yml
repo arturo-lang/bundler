@@ -67,18 +67,25 @@ runs:
 
         - name: Create artifact
           run: |
+            mkdir ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
             if [ "${{ runner.os }}" = "Windows" ]; then
-                tar czf ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.tar.gz ${{ env.EXEFILE }}.exe
+                cp ${{ env.EXEFILE }}.exe ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
             else
-                tar czf ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.tar.gz ${{ env.EXEFILE }}
+                cp ${{ env.EXEFILE }} ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
             fi
+            # if [ "${{ runner.os }}" = "Windows" ]; then
+                
+            #     #tar czf ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.tar.gz 
+            # else
+            #     tar czf ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.tar.gz ${{ env.EXEFILE }}
+            # fi
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
         - name: Upload Artifact
           uses: 'actions/upload-artifact@v1'
           with:
-            name: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.tar.gz
-            path: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}.tar.gz          
+            name: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+            path: ${{ env.EXEFILE }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}        
 
 branding:
     icon: 'package'
