@@ -33,7 +33,7 @@ jobs:
                     - windows-latest      # Windows - amd64
         steps:
             - uses: actions/checkout@v4
-            - uses: ./
+            - uses: arturo-lang/bundler@main
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
                 entry: ${{ env.app-entry }}
