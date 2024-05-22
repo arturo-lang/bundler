@@ -40,7 +40,7 @@ jobs:
               run: |
                 ./testbundle
               shell: bash
-    
+     
     release:
         runs-on: ubuntu-latest
         if: ${{ always() }}
