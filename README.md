@@ -8,16 +8,16 @@
 ---
  
 <!--ts-->
-   * [How do I use it?](#how-do-i-use-it)
+   * [How do I use it?](#-how-do-i-use-it)
       * [More options](#more-options)
-   * [How can I release an app?](#how-can-i-release-an-app)
-   * [FAQ](#faq)
+   * [How can I release an app?](#-how-can-i-release-an-app)
+   * [FAQ](#-faq)
    * [License](#license)
 <!--te-->
 
 ---
 
-### How do I use it?
+### 🌵 How do I use it?
 
 The most barebones configuration would be:
 
@@ -47,7 +47,7 @@ Based on the runner, the action will compile and setup the appropriate, native b
 | target | change the name of the final binary (default: `'auto'` = use the same name as the entry script) |
 | version | set version number, to be included in the archive names - in the case of releases, this will be extracted automatically from the release tag (default: `''`) |
 
-### How can I release an app?
+### 🔥 How can I release an app?
 
 With Arturo's bundler and the appropriate setup, you can instantly offer binaries for all major OSes, as part of your GitHub repo's workflows.
 
@@ -73,7 +73,7 @@ Next time you push a new `vX.Y.Z` tag, a new release will be automatically creat
 
 Sounds amazing? It actually *is*! 🚀
 
-### FAQ
+### 📖 FAQ
 
 #### I have integrated the Release workflow, but it fails at the very last step!
 
