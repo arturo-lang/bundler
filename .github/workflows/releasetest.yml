@@ -11,18 +11,21 @@ concurrency:
  
 jobs:
     Bundle:
-        runs-on: ubuntu-latest
-        # ${{ matrix.os }}
-        # strategy:
-        #     matrix:
-        #         os:
-        #             - ubuntu-latest
-        #             # - {os: macos-12}
-        #             # - {os: macos-latest}
-        #             # - {os: windows-latest}
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os:
+                    - ubuntu-latest 
+                    - macos-12              # amd64
+                    - macos-latest          # arm64 / M1
+                    - windows-latest
+        outputs:
+            EXEFILE: ${{ steps.bundler.outputs.EXEFILE }}
+            VERSION: ${{ steps.bundler.outputs.VERSION }}
         steps:
             - uses: actions/checkout@v4
             - uses: ./
+              id: bundler
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
                 entry: tests/testbundle.art
