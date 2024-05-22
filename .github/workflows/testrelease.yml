@@ -30,6 +30,7 @@ jobs:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 entry: tests/testbundle.art
                 version: 1.0.0
+                release: 'true'
             - run: |
                 echo "name=${{ env.name }}" >> $GITHUB_OUTPUT
                 echo "version=${{ env.version }}" >> $GITHUB_OUTPUT
