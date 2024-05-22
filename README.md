@@ -2,7 +2,7 @@
 
 <h1>Arturo Bundler</h1> 
 
-### Easily bundle an Arturo app on any GitHub runner/OS<br><br>![License](https://img.shields.io/github/license/arturo-lang/bundler?style=for-the-badge) [![Build Status](https://img.shields.io/github/actions/workflow/status/arturo-lang/bundler/test.yml?branch=main&style=for-the-badge)](https://github.com/arturo-lang/bundler/actions) 
+### Easily bundle an Arturo app on any GitHub runner/OS<br><br>![License](https://img.shields.io/github/license/arturo-lang/bundler?style=for-the-badge) [![Build Status](https://img.shields.io/github/actions/workflow/status/arturo-lang/bundler/testbundle.yml?branch=main&style=for-the-badge)](https://github.com/arturo-lang/bundler/actions)
 </div>
 
 ---
