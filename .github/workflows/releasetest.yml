@@ -1,0 +1,47 @@
+name: "Release Arturo application"
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+concurrency: 
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    test:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os:
+                    - ubuntu-latest
+                    # - {os: macos-12}
+                    # - {os: macos-latest}
+                    # - {os: windows-latest}
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: ./
+              with: 
+                token: ${{ secrets.GITHUB_TOKEN }}
+                entry: tests/testbundle.art
+                version: 1.0.0
+
+            - name: Run tests
+              run: |
+                ./testbundle
+              shell: bash
+    
+    release:
+        runs-on: ubuntu-latest
+        if: ${{ always() }}
+        needs: [test]
+        steps:
+            - uses: arturo-lang/bundler-releases@main
+              with: 
+                token: ${{ secrets.GITHUB_TOKEN }}
+                name: ${{ needs.test.outputs.EXEFILE }}
+                version: ${{ needs.test.outputs.VERSION }}
+                 
+
