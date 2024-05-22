@@ -46,7 +46,7 @@ jobs:
         if: ${{ always() }}
         needs: [test]
         steps:
-            - uses: ./subaction/
+            - uses: arturo-lang/bundler-releases@main
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
                 bundling: ${{ needs.test.outputs }}
