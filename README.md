@@ -42,7 +42,8 @@ Based on the runner, the action will compile and setup the appropriate, native b
 
 | option | description |
 |--------|-------------|
-| target   | change the name of the final binary (default: `auto` = use the same name as the entry script |
+| target | change the name of the final binary (default: `'auto'` = use the same name as the entry script |
+| version | set version number, to be included in the archive names (default: `''`) |
 
 ------
 
