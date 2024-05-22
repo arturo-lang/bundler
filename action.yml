@@ -100,25 +100,25 @@ runs:
           shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
 
         - name: Upload Artifact (Normal)
-          if: ${{ inputs.release == 'false' }}
+          #if: ${{ inputs.release == 'false' }}
           uses: 'actions/upload-artifact@v4'
           with:
             name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
             path: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
 
-        - name: Upload Artifact (Release / *nix)
-          if: ${{ inputs.release == 'true' && runner.os != 'Windows' }}
-          uses: 'actions/upload-artifact@v4'
-          with:
-            name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
-            path: ${{ env.EXEFILE }}
+        # - name: Upload Artifact (Release / *nix)
+        #   if: ${{ inputs.release == 'true' && runner.os != 'Windows' }}
+        #   uses: 'actions/upload-artifact@v4'
+        #   with:
+        #     name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+        #     path: ${{ env.EXEFILE }}
 
-        - name: Upload Artifact (Release / Windows)
-          if: ${{ inputs.release == 'true' && runner.os == 'Windows' }}
-          uses: 'actions/upload-artifact@v4'
-          with:
-            name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
-            path: ${{ env.EXEFILE }}.exe
+        # - name: Upload Artifact (Release / Windows)
+        #   if: ${{ inputs.release == 'true' && runner.os == 'Windows' }}
+        #   uses: 'actions/upload-artifact@v4'
+        #   with:
+        #     name: ${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}
+        #     path: ${{ env.EXEFILE }}.exe
 
 branding:
     icon: 'package'
