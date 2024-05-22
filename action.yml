@@ -103,7 +103,7 @@ runs:
             if [ "${{ inputs.release }}" = "true" ]; then
                 zip -r $FILENAME.zip $FILENAME
             fi
-          shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
+          shell: bash
 
         - name: Upload Artifact
           uses: 'actions/upload-artifact@v4'

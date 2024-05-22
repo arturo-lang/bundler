@@ -4,7 +4,7 @@
 env:
     app-name: testbundle
     app-entry: tests/testbundle.art
-    app-notes: 
+    app-notes: auto
 ##############################################
 
 # > if there is no serious reason, better not
