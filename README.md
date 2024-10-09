@@ -36,7 +36,7 @@ Based on the runner, the action will compile and setup the appropriate, native b
 | runner | binary |
 |--------|--------|
 | ubuntu-latest | amd64 / Linux |
-| macos-12 | amd64 / macOS |
+| macos-13 | amd64 / macOS |
 | macos-latest | arm64 (M1) / macOS |
 | windows-latest | amd64 / Windows |
 

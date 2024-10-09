@@ -28,7 +28,7 @@ jobs:
             matrix:
                 os:
                     - ubuntu-latest       # Linux - amd64
-                    - macos-12            # macOS - amd64
+                    - macos-13            # macOS - amd64
                     - macos-latest        # macOS - arm64/M1
                     - windows-latest      # Windows - amd64
         steps:
