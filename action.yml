@@ -194,7 +194,7 @@ runs:
           shell: ${{ 
               (env.os == 'windows') && 'msys2 {0}' || 
                                        'bash'      }}
-
+ 
         - name: Create artifact
           run: |
             FILENAME="${{ env.EXEFILE }}${{ env.VERSION }}-${{ env.ARCHNAME }}-${{ env.OSNAME }}"
