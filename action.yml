@@ -38,10 +38,36 @@ runs:
             token: ${{ inputs.token }}
             arch: ${{ inputs.arch }}
 
+        - name: Install Nim (Linux/macOS)
+          if: runner.os != 'Windows'
+          run: |
+            if [ "${{ runner.os }}" = "macOS" ]; then
+                brew update
+                brew install nim
+            else
+                # Linux
+                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+                echo >> /home/runner/.bashrc
+                echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/runner/.bashrc
+                eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+                brew install nim
+                echo "/home/linuxbrew/.linuxbrew/bin" >> $GITHUB_PATH
+            fi
+          shell: bash
+
+        - name: Install Nim (Windows)
+          if: runner.os == 'Windows'
+          run: |
+            mkdir nim
+            curl -L https://nim-lang.org/download/nim-2.2.6_x64.zip -o nim.zip
+            7z x nim.zip -onim
+            rm nim.zip
+          shell: msys2 {0}
+
         - name: Generate executable
           run: |
             if [ "${{ runner.os }}" = "Windows" ]; then
-                export PATH="${{ github.workspace }}/nim/nim-2.0.4/bin":$PATH
+                export PATH="${{ github.workspace }}/nim/nim-2.2.6/bin":$PATH
             fi
 
             if [ "${{ inputs.target }}" = "auto" ]; then
@@ -117,4 +143,3 @@ runs:
           with:
             name: ${{ env.FILENAME }}
             path: ${{ env.FILENAME }}${{ inputs.release == 'true' && '.zip' || '' }}
- 
