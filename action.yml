@@ -8,10 +8,15 @@ inputs:
         description: >-
             The GITHUB_TOKEN secret.
         required: true
+    os:
+        description: >-
+            Target OS (linux, windows, macos, freebsd).
+            Defaults to auto-detect from runner.
+        default: ''
     arch:
         description: >-
             The architecture to build for.
-            (one of: 'x86', 'arm', 'arm64', 'amd64', 'native')
+            (one of: 'amd64', 'arm64', 'native')
         default: 'native'
     entry: 
         description: >-
@@ -32,26 +37,94 @@ inputs:
 runs:
     using: "composite"
     steps:
+        - name: Detect build configuration
+          run: |
+            # Detect OS
+            if [ -z "${{ inputs.os }}" ]; then
+                case "${{ runner.os }}" in
+                    Linux)   detected_os="linux" ;;
+                    macOS)   detected_os="macos" ;;
+                    Windows) detected_os="windows" ;;
+                    *)       detected_os="linux" ;;
+                esac
+            else
+                detected_os="${{ inputs.os }}"
+            fi
+
+            # Detect architecture
+            if [ "${{ inputs.arch }}" = "native" ] || [ -z "${{ inputs.arch }}" ]; then
+                case "${{ runner.arch }}" in
+                    ARM64) detected_arch="arm64" ;;
+                    X64)   detected_arch="amd64" ;;
+                    *)     detected_arch="amd64" ;;
+                esac
+            else
+                detected_arch="${{ inputs.arch }}"
+            fi
+
+            # Export to environment
+            echo "os=$detected_os" >> $GITHUB_ENV
+            echo "arch=$detected_arch" >> $GITHUB_ENV
+            
+            echo "Detected OS: $detected_os"
+            echo "Detected Arch: $detected_arch"
+          shell: bash
+
         - name: Install Arturo
           uses: arturo-lang/arturo-action@main
           with: 
             token: ${{ inputs.token }}
-            arch: ${{ inputs.arch }}
+            os: ${{ env.os }}
+            arch: ${{ env.arch }}
+
+        - name: Install Nim (Linux)
+          if: env.os == 'linux'
+          run: |
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            echo >> /home/runner/.bashrc
+            echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/runner/.bashrc
+            eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+            brew install nim
+            echo "/home/linuxbrew/.linuxbrew/bin" >> $GITHUB_PATH
+          shell: bash
+
+        - name: Install Nim (macOS)
+          if: env.os == 'macos'
+          run: |
+            brew update
+            brew install nim
+          shell: bash
+
+        - name: Install Nim (Windows)
+          if: env.os == 'windows'
+          run: |
+            mkdir nim
+            curl -L https://nim-lang.org/download/nim-2.2.6_x64.zip -o nim.zip
+            7z x nim.zip -onim
+            rm nim.zip
+          shell: msys2 {0}
 
         - name: Generate executable
           run: |
-            if [ "${{ runner.os }}" = "Windows" ]; then
-                export PATH="${{ github.workspace }}/nim/nim-2.0.4/bin":$PATH
+            # Install Nim for FreeBSD
+            if [ "${{ env.os }}" = "freebsd" ]; then
+                pkg install -y nim
+            fi
+            
+            # Set Nim path for Windows
+            if [ "${{ env.os }}" = "windows" ]; then
+                export PATH="${{ github.workspace }}/nim/nim-2.2.6/bin":$PATH
             fi
 
+            # Bundle the application
             if [ "${{ inputs.target }}" = "auto" ]; then
                 arturo --bundle ${{ inputs.entry }}
                 entry="${{ inputs.entry }}"
                 xbase=${entry##*/}
                 xpref=${xbase%.*}
 
-                if [ "${{ runner.os }}" != "Windows" ]; then
-                    sudo chmod +x $xpref
+                if [ "${{ env.os }}" != "windows" ]; then
+                    chmod +x $xpref
                 fi
  
                 echo "EXEFILE=$xpref" >> $GITHUB_ENV
@@ -59,20 +132,22 @@ runs:
             else
                 arturo --bundle --as:${{ inputs.target }} ${{ inputs.entry }}
 
-                if [ "${{ runner.os }}" != "Windows" ]; then
-                    sudo chmod +x ${{ inputs.target }}
+                if [ "${{ env.os }}" != "windows" ]; then
+                    chmod +x ${{ inputs.target }}
                 fi
 
                 echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
                 echo "name=${{ inputs.target }}" >> $GITHUB_ENV
             fi
 
-            if [[ "${{ runner.arch }}" = "ARM64" || "${{ inputs.arch }}" = "arm64" ]]; then
+            # Determine architecture name for artifact
+            if [[ "${{ env.arch }}" = "arm64" ]]; then
                 echo "ARCHNAME=arm64" >> $GITHUB_ENV
             else
                 echo "ARCHNAME=amd64" >> $GITHUB_ENV
             fi
 
+            # Handle version
             if [ "${{ inputs.version }}" != "" ]; then
                 echo "VERSION=-${{ inputs.version }}" >> $GITHUB_ENV
                 echo "version=${{ inputs.version }}" >> $GITHUB_ENV
@@ -81,6 +156,7 @@ runs:
                 echo "version=" >> $GITHUB_ENV
             fi
 
+            # Extract version from tag for releases
             if [ "${{ inputs.release }}" = "true" ]; then
                 if [ "${{ inputs.version }}" = "" ]; then
                     ARCHV_VERS=$(arturo --evaluate "print replace {${{ github.ref_name }}} {/^v/} {}")
@@ -88,9 +164,13 @@ runs:
                 fi
             fi
 
-            OSNAMELOWER=$(arturo --evaluate "print lower {${{ runner.os }}}")
+            # Get OS name in lowercase
+            OSNAMELOWER=$(arturo --evaluate "print lower {${{ env.os }}}")
             echo "OSNAME=$OSNAMELOWER" >> $GITHUB_ENV
-          shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
+          shell: ${{ 
+              (env.os == 'freebsd') && 'freebsd {0}' ||
+              (env.os == 'windows') && 'msys2 {0}'   || 
+                                       'bash'        }}
 
         - name: Create artifact
           run: |
@@ -98,19 +178,23 @@ runs:
             echo "FILENAME=$FILENAME" >> $GITHUB_ENV
             
             mkdir $FILENAME
-            if [ "${{ runner.os }}" = "Windows" ]; then
+            if [ "${{ env.os }}" = "windows" ]; then
                 cp ${{ env.EXEFILE }}.exe $FILENAME
             else
                 cp ${{ env.EXEFILE }} $FILENAME
             fi
+            
             if [ "${{ inputs.release }}" = "true" ]; then
-                if [ "${{ runner.os }}" = "Windows" ]; then
+                if [ "${{ env.os }}" = "windows" ]; then
                     7z a $FILENAME.zip $FILENAME
                 else
                     zip -r $FILENAME.zip $FILENAME
                 fi
             fi
-          shell: ${{ runner.os == 'Windows' && 'msys2 {0}' || 'bash' }}
+          shell: ${{ 
+              (env.os == 'freebsd') && 'freebsd {0}' ||
+              (env.os == 'windows') && 'msys2 {0}'   || 
+                                       'bash'        }}
 
         - name: Upload Artifact
           uses: 'actions/upload-artifact@v4'
