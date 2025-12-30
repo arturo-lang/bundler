@@ -103,7 +103,6 @@ runs:
             7z x nim.zip -onim
             rm nim.zip
           shell: msys2 {0}
-          shell: msys2 {0}
 
         - name: Bundle (FreeBSD)
           if: env.os == 'freebsd'
