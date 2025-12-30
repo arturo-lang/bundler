@@ -21,7 +21,7 @@ jobs:
     Bundle:
         runs-on: ${{ 
             (matrix.os == 'linux')   && 'ubuntu-latest' ||
-            (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macos-13') ||
+            (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macos-15-intel') ||
             (matrix.os == 'windows') && 'windows-latest' ||
             (matrix.os == 'freebsd') && 'ubuntu-latest' ||
                                         'ubuntu-latest' }}
