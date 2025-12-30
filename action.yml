@@ -104,13 +104,13 @@ runs:
             rm nim.zip
           shell: msys2 {0}
 
+        - name: Install Nim (FreeBSD)
+          if: env.os == 'freebsd'
+          shell: freebsd {0}
+          run: pkg install -y nim
+
         - name: Generate executable
           run: |
-            # Install Nim for FreeBSD
-            if [ "${{ env.os }}" = "freebsd" ]; then
-                pkg install -y nim
-            fi
-            
             # Set Nim path for Windows
             if [ "${{ env.os }}" = "windows" ]; then
                 export PATH="${{ github.workspace }}/nim/nim-2.2.6/bin":$PATH
