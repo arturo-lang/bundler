@@ -336,6 +336,18 @@ runs:
             ls -lah
             echo "=========================================="
 
+        - name: Copy FreeBSD artifacts back to host
+          if: env.os == 'freebsd'
+          run: |
+            echo "Manually copying FreeBSD artifacts from VM..."
+            rsync -av -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+              freebsd:$GITHUB_WORKSPACE/testbundle-*-freebsd* . || true
+            rsync -av -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+              freebsd:$GITHUB_WORKSPACE/testbundle . || true
+            echo "Files after rsync:"
+            ls -lah
+          shell: bash
+
         - name: Debug - Check workspace (FreeBSD)
           if: env.os == 'freebsd'
           run: |
