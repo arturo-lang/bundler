@@ -119,6 +119,13 @@ runs:
             
             if [ "${{ env.os }}" = "freebsd" ]; then
                 export PATH="/usr/local/bin:$PATH"
+                # Debug: check if nim is actually there and in PATH
+                echo "DEBUG: Checking nim location..."
+                which nim || echo "nim not in PATH!"
+                ls -la /usr/local/bin/nim || echo "nim not in /usr/local/bin!"
+                echo "DEBUG: Current PATH: $PATH"
+                # Try running nim directly
+                /usr/local/bin/nim --version || echo "Can't run nim directly!"
             fi
             
             if [ "${{ inputs.target }}" = "auto" ]; then
