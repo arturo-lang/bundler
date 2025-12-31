@@ -37,6 +37,12 @@ inputs:
 runs:
     using: "composite"
     steps:
+        ######################################
+        ######################################
+        ## INITIAL SETUP
+        ######################################
+        ######################################
+
         - name: Detect build configuration
           run: |
             # Detect OS
@@ -66,6 +72,12 @@ runs:
             echo "os=$detected_os" >> $GITHUB_ENV
             echo "arch=$detected_arch" >> $GITHUB_ENV
           shell: bash
+
+        ######################################
+        ######################################
+        ## DEPENDENCIES
+        ######################################
+        ######################################
 
         - name: Install Arturo
           uses: arturo-lang/arturo-action@main
@@ -106,6 +118,12 @@ runs:
           shell: freebsd {0}
           run: |
             pkg install -y nim git zip
+
+        ######################################
+        ######################################
+        ## COMPILATION
+        ######################################
+        ######################################
 
         - name: Bundle
           shell: ${{ (env.os == 'freebsd') && 'freebsd {0}' || (env.os == 'windows') && 'msys2 {0}' || 'bash' }}
@@ -163,6 +181,12 @@ runs:
                 echo "FILENAME=$FILENAME" >> $GITHUB_ENV
                 echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
             fi
+
+        ######################################
+        ######################################
+        ## ARTIFACTS
+        ######################################
+        ######################################
 
         - name: Copy FreeBSD artifacts to host
           if: env.os == 'freebsd'
