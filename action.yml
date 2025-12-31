@@ -111,9 +111,14 @@ runs:
           shell: freebsd {0}
 
         - name: Bundle
+          shell: ${{ (env.os == 'freebsd') && 'freebsd {0}' || (env.os == 'windows') && 'msys2 {0}' || 'bash' }}
           run: |
             if [ "${{ env.os }}" = "windows" ]; then
                 export PATH="${{ github.workspace }}/nim/nim-2.2.6/bin":$PATH
+            fi
+            
+            if [ "${{ env.os }}" = "freebsd" ]; then
+                export PATH="/usr/local/bin:$PATH"
             fi
             
             if [ "${{ inputs.target }}" = "auto" ]; then
@@ -135,7 +140,7 @@ runs:
                 echo "name=${{ inputs.target }}" >> $GITHUB_ENV
             fi
             
-            if [[ "${{ env.arch }}" = "arm64" ]]; then
+            if [ "${{ env.arch }}" = "arm64" ]; then
                 echo "ARCHNAME=arm64" >> $GITHUB_ENV
             else
                 echo "ARCHNAME=amd64" >> $GITHUB_ENV
@@ -156,10 +161,6 @@ runs:
             
             OSNAMELOWER=$(arturo --evaluate "print lower {${{ env.os }}}")
             echo "OSNAME=$OSNAMELOWER" >> $GITHUB_ENV
-          shell: ${{ 
-              (env.os == 'freebsd') && 'freebsd {0}' ||
-              (env.os == 'windows') && 'msys2 {0}'   || 
-                                       'bash'        }}
  
         - name: Create artifact
           run: |
