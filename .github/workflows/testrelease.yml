@@ -41,7 +41,7 @@ jobs:
         
         steps:
             - uses: actions/checkout@v4
-            - uses: arturo-lang/bundler@main
+            - uses: arturo-lang/bundler@v2
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
                 os: ${{ matrix.os }}
