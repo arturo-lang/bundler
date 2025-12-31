@@ -55,4 +55,5 @@ jobs:
 
             - name: Run tests
               run: |
+                cd $GITHUB_WORKSPACE
                 ./testbundle

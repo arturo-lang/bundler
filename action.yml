@@ -139,23 +139,17 @@ runs:
             
             FILENAME="${EXEFILE}${VERSION}-${OSNAME}-${{ env.arch }}"
             
-            # Create artifact directory
-            mkdir -p $FILENAME
-            if [ "${{ env.os }}" = "windows" ]; then
-                cp ${EXEFILE}.exe $FILENAME/
-            else
-                cp $EXEFILE $FILENAME/
-            fi
-            
+            # Create archive with just the binary
             if [ "${{ inputs.release }}" = "true" ]; then
                 if [ "${{ env.os }}" = "windows" ]; then
-                    7z a $FILENAME.zip $FILENAME
+                    7z a $FILENAME.zip ${EXEFILE}.exe
                 else
-                    zip -r $FILENAME.zip $FILENAME
+                    zip $FILENAME.zip $EXEFILE
                 fi
             fi
             
-            # Save for upload
+            # Add to PATH for subsequent steps
+            echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
             echo "FILENAME=$FILENAME" >> $GITHUB_ENV
 
         - name: Bundle (FreeBSD)
@@ -191,29 +185,30 @@ runs:
             
             FILENAME="${EXEFILE}${VERSION}-${OSNAME}-${{ env.arch }}"
             
-            # Create artifact directory
-            mkdir -p $FILENAME
-            cp $EXEFILE $FILENAME/
-            
+            # Create archive with just the binary
             if [ "${{ inputs.release }}" = "true" ]; then
-                zip -r $FILENAME.zip $FILENAME
+                zip $FILENAME.zip $EXEFILE
             fi
             
-            # Save FILENAME for host (will be rsynced back)
+            # Save FILENAME for host
             echo "$FILENAME" > .bundler_filename
 
         - name: Copy FreeBSD artifacts to host
           if: env.os == 'freebsd'
           run: |
             rsync -av -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-              freebsd:$GITHUB_WORKSPACE/*-freebsd-* freebsd:$GITHUB_WORKSPACE/.bundler_filename . || true
+              freebsd:$GITHUB_WORKSPACE/testbundle* freebsd:$GITHUB_WORKSPACE/.bundler_filename . || true
             
             FILENAME=$(cat .bundler_filename)
             echo "FILENAME=$FILENAME" >> $GITHUB_ENV
+            
+            # Add to PATH for subsequent steps
+            echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
           shell: bash
 
         - name: Upload Artifact
+          if: inputs.release == 'true'
           uses: actions/upload-artifact@v4
           with:
             name: ${{ env.FILENAME }}
-            path: ${{ env.FILENAME }}${{ inputs.release == 'true' && '.zip' || '' }}
+            path: ${{ env.FILENAME }}.zip
