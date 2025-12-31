@@ -48,6 +48,7 @@ jobs:
                 arch: ${{ matrix.arch }}
                 entry: ${{ env.app-entry }}
                 target: ${{ env.app-name }}
+                version: ${{ github.ref_name }}
                 release: 'true'
 
     Publish:
