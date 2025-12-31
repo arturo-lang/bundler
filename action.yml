@@ -198,12 +198,18 @@ runs:
             if [ "${{ inputs.release }}" = "true" ]; then
                 zip -r $FILENAME.zip $FILENAME
             fi
+            
+            # Save FILENAME for host (will be rsynced back)
+            echo "$FILENAME" > .bundler_filename
 
         - name: Copy FreeBSD artifacts to host
           if: env.os == 'freebsd'
           run: |
             rsync -av -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-              freebsd:$GITHUB_WORKSPACE/*-freebsd-* . || true
+              freebsd:$GITHUB_WORKSPACE/*-freebsd-* freebsd:$GITHUB_WORKSPACE/.bundler_filename . || true
+            
+            FILENAME=$(cat .bundler_filename)
+            echo "FILENAME=$FILENAME" >> $GITHUB_ENV
           shell: bash
 
         - name: Upload Artifact
