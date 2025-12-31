@@ -109,7 +109,7 @@ runs:
           run: |
             # Install Nim if on FreeBSD
             if [ "${{ env.os }}" = "freebsd" ]; then
-                pkg install -y nim
+                pkg install -y nim git
                 export PATH="/usr/local/nim/bin:$PATH"
             fi
             
