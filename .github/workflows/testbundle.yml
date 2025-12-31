@@ -1,4 +1,4 @@
-name: Bundle Arturo app
+name: Bundle
 
 on:
     push:
@@ -18,7 +18,7 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    Bundle:
+    Test:
         runs-on: ${{ 
             (matrix.os == 'linux')   && (matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
             (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macos-15-intel') ||

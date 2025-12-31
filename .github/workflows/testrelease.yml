@@ -10,7 +10,7 @@ env:
 # > if there is no serious reason, better not
 #   change anything below this line! ;-)
 
-name: Release Arturo app
+name: Release
 
 on:
     push:
@@ -50,7 +50,7 @@ jobs:
                 target: ${{ env.app-name }}
                 release: 'true'
 
-    Release:
+    Publish:
         runs-on: ubuntu-latest
         if: ${{ always() }}
         needs: Bundle
