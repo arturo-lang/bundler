@@ -101,14 +101,22 @@ runs:
             rm nim.zip
           shell: msys2 {0}
 
-        - name: Bundle (Linux/macOS/Windows)
-          if: env.os != 'freebsd'
-          shell: ${{ env.os == 'windows' && 'msys2 {0}' || 'bash' }}
+        - name: Install Nim (FreeBSD)
+          if: env.os == 'freebsd'
+          shell: freebsd {0}
+          run: |
+            pkg install -y nim git zip
+
+        - name: Bundle
+          shell: ${{ (env.os == 'freebsd') && 'freebsd {0}' || (env.os == 'windows') && 'msys2 {0}' || 'bash' }}
           run: |
             cd $GITHUB_WORKSPACE
             
+            # Set up PATH for different platforms
             if [ "${{ env.os }}" = "windows" ]; then
                 export PATH="${{ github.workspace }}/nim/nim-2.2.6/bin":$PATH
+            elif [ "${{ env.os }}" = "freebsd" ]; then
+                export PATH="/usr/local/nim/bin:$PATH"
             fi
             
             # Bundle
@@ -148,50 +156,13 @@ runs:
                 fi
             fi
             
-            # Add to PATH for subsequent steps
-            echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
-            echo "FILENAME=$FILENAME" >> $GITHUB_ENV
-
-        - name: Bundle (FreeBSD)
-          if: env.os == 'freebsd'
-          shell: freebsd {0}
-          run: |
-            cd $GITHUB_WORKSPACE
-            
-            pkg install -y nim git zip
-            export PATH="/usr/local/nim/bin:$PATH"
-            
-            # Bundle
-            if [ "${{ inputs.target }}" = "auto" ]; then
-                arturo --bundle ${{ inputs.entry }}
-                entry="${{ inputs.entry }}"
-                xbase=${entry##*/}
-                EXEFILE=${xbase%.*}
-                chmod +x $EXEFILE
+            # Save FILENAME for host (FreeBSD needs this for rsync)
+            if [ "${{ env.os }}" = "freebsd" ]; then
+                echo "$FILENAME" > .bundler_filename
             else
-                arturo --bundle --as:${{ inputs.target }} ${{ inputs.entry }}
-                EXEFILE="${{ inputs.target }}"
-                chmod +x $EXEFILE
+                echo "FILENAME=$FILENAME" >> $GITHUB_ENV
+                echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
             fi
-            
-            # Determine names
-            OSNAME=$(arturo --evaluate "print lower {freebsd}")
-            
-            if [ "${{ inputs.version }}" != "" ]; then
-                VERSION="-${{ inputs.version }}"
-            else
-                VERSION=""
-            fi
-            
-            FILENAME="${EXEFILE}${VERSION}-${OSNAME}-${{ env.arch }}"
-            
-            # Create archive with just the binary
-            if [ "${{ inputs.release }}" = "true" ]; then
-                zip $FILENAME.zip $EXEFILE
-            fi
-            
-            # Save FILENAME for host
-            echo "$FILENAME" > .bundler_filename
 
         - name: Copy FreeBSD artifacts to host
           if: env.os == 'freebsd'
@@ -201,8 +172,6 @@ runs:
             
             FILENAME=$(cat .bundler_filename)
             echo "FILENAME=$FILENAME" >> $GITHUB_ENV
-            
-            # Add to PATH for subsequent steps
             echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
           shell: bash
 
