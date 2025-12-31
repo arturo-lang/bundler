@@ -104,55 +104,18 @@ runs:
             rm nim.zip
           shell: msys2 {0}
 
-        - name: Bundle (FreeBSD)
+        - name: Install Nim (FreeBSD)
           if: env.os == 'freebsd'
-          uses: vmactions/freebsd-vm@v1
-          with:
-            usesh: true
-            sync: rsync
-            copyback: true
-            run: |
-              pkg install -y nim
-              cd $GITHUB_WORKSPACE
-              if [ "${{ inputs.target }}" = "auto" ]; then
-                  arturo --bundle ${{ inputs.entry }}
-                  entry="${{ inputs.entry }}"
-                  xbase=${entry##*/}
-                  xpref=${xbase%.*}
-                  chmod +x $xpref
-                  echo "EXEFILE=$xpref" >> $GITHUB_ENV
-                  echo "name=$xpref" >> $GITHUB_ENV
-              else
-                  arturo --bundle --as:${{ inputs.target }} ${{ inputs.entry }}
-                  chmod +x ${{ inputs.target }}
-                  echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
-                  echo "name=${{ inputs.target }}" >> $GITHUB_ENV
-              fi
-              if [[ "${{ env.arch }}" = "arm64" ]]; then
-                  echo "ARCHNAME=arm64" >> $GITHUB_ENV
-              else
-                  echo "ARCHNAME=amd64" >> $GITHUB_ENV
-              fi
-              if [ "${{ inputs.version }}" != "" ]; then
-                  echo "VERSION=-${{ inputs.version }}" >> $GITHUB_ENV
-                  echo "version=${{ inputs.version }}" >> $GITHUB_ENV
-              else
-                  echo "VERSION=" >> $GITHUB_ENV
-                  echo "version=" >> $GITHUB_ENV
-              fi
-              if [ "${{ inputs.release }}" = "true" ] && [ "${{ inputs.version }}" = "" ]; then
-                  ARCHV_VERS=$(arturo --evaluate "print replace {${{ github.ref_name }}} {/^v/} {}")
-                  echo "VERSION=-$ARCHV_VERS" >> $GITHUB_ENV
-              fi
-              OSNAMELOWER=$(arturo --evaluate "print lower {${{ env.os }}}")
-              echo "OSNAME=$OSNAMELOWER" >> $GITHUB_ENV
+          run: |
+            pkg install -y nim
+          shell: freebsd {0}
 
-        - name: Bundle (Linux/macOS/Windows)
-          if: env.os != 'freebsd'
+        - name: Bundle
           run: |
             if [ "${{ env.os }}" = "windows" ]; then
                 export PATH="${{ github.workspace }}/nim/nim-2.2.6/bin":$PATH
             fi
+            
             if [ "${{ inputs.target }}" = "auto" ]; then
                 arturo --bundle ${{ inputs.entry }}
                 entry="${{ inputs.entry }}"
@@ -171,11 +134,13 @@ runs:
                 echo "EXEFILE=${{ inputs.target }}" >> $GITHUB_ENV
                 echo "name=${{ inputs.target }}" >> $GITHUB_ENV
             fi
+            
             if [[ "${{ env.arch }}" = "arm64" ]]; then
                 echo "ARCHNAME=arm64" >> $GITHUB_ENV
             else
                 echo "ARCHNAME=amd64" >> $GITHUB_ENV
             fi
+            
             if [ "${{ inputs.version }}" != "" ]; then
                 echo "VERSION=-${{ inputs.version }}" >> $GITHUB_ENV
                 echo "version=${{ inputs.version }}" >> $GITHUB_ENV
@@ -183,17 +148,18 @@ runs:
                 echo "VERSION=" >> $GITHUB_ENV
                 echo "version=" >> $GITHUB_ENV
             fi
-            if [ "${{ inputs.release }}" = "true" ]; then
-                if [ "${{ inputs.version }}" = "" ]; then
-                    ARCHV_VERS=$(arturo --evaluate "print replace {${{ github.ref_name }}} {/^v/} {}")
-                    echo "VERSION=-$ARCHV_VERS" >> $GITHUB_ENV
-                fi
+            
+            if [ "${{ inputs.release }}" = "true" ] && [ "${{ inputs.version }}" = "" ]; then
+                ARCHV_VERS=$(arturo --evaluate "print replace {${{ github.ref_name }}} {/^v/} {}")
+                echo "VERSION=-$ARCHV_VERS" >> $GITHUB_ENV
             fi
+            
             OSNAMELOWER=$(arturo --evaluate "print lower {${{ env.os }}}")
             echo "OSNAME=$OSNAMELOWER" >> $GITHUB_ENV
           shell: ${{ 
-              (env.os == 'windows') && 'msys2 {0}' || 
-                                       'bash'      }}
+              (env.os == 'freebsd') && 'freebsd {0}' ||
+              (env.os == 'windows') && 'msys2 {0}'   || 
+                                       'bash'        }}
  
         - name: Create artifact
           run: |
