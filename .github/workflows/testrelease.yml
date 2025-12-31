@@ -10,7 +10,7 @@ env:
 # > if there is no serious reason, better not
 #   change anything below this line! ;-)
 
-name: Release Arturo app
+name: Release
 
 on:
     push:
@@ -23,24 +23,34 @@ concurrency:
 
 jobs:
     Bundle:
-        runs-on: ${{ matrix.os }}
+        runs-on: ${{ 
+            (matrix.os == 'linux')   && (matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
+            (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macos-15-intel') ||
+            (matrix.os == 'windows') && 'windows-latest' ||
+            (matrix.os == 'freebsd') && 'ubuntu-latest' ||
+                                        'ubuntu-latest' }}
         strategy:
             matrix:
-                os:
-                    - ubuntu-latest       # Linux - amd64
-                    - macos-13            # macOS - amd64
-                    - macos-latest        # macOS - arm64/M1
-                    - windows-latest      # Windows - amd64
+                include:
+                    - {os: linux,   arch: amd64}
+                    - {os: linux,   arch: arm64}
+                    - {os: macos,   arch: amd64}
+                    - {os: macos,   arch: arm64}
+                    - {os: windows, arch: amd64}
+                    - {os: freebsd, arch: amd64}
+        
         steps:
             - uses: actions/checkout@v4
             - uses: arturo-lang/bundler@main
               with: 
                 token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
                 entry: ${{ env.app-entry }}
-                target: ${{ env.app-name}}
+                target: ${{ env.app-name }}
                 release: 'true'
 
-    Release:
+    Publish:
         runs-on: ubuntu-latest
         if: ${{ always() }}
         needs: Bundle
@@ -50,4 +60,4 @@ jobs:
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 name: ${{ env.app-name }}
-                description: ${{ env.app-notes }}
+                notes: ${{ env.app-notes }}
