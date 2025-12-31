@@ -39,10 +39,6 @@ runs:
     steps:
         - name: Detect build configuration
           run: |
-            echo "=========================================="
-            echo "DETECTING BUILD CONFIGURATION"
-            echo "=========================================="
-            
             # Detect OS
             if [ -z "${{ inputs.os }}" ]; then
                 case "${{ runner.os }}" in
@@ -69,12 +65,6 @@ runs:
             # Export to environment
             echo "os=$detected_os" >> $GITHUB_ENV
             echo "arch=$detected_arch" >> $GITHUB_ENV
-            
-            echo "Detected OS: $detected_os"
-            echo "Detected Arch: $detected_arch"
-            echo "Runner OS: ${{ runner.os }}"
-            echo "Runner Arch: ${{ runner.arch }}"
-            echo "=========================================="
           shell: bash
 
         - name: Install Arturo
@@ -87,290 +77,137 @@ runs:
         - name: Install Nim (Linux)
           if: env.os == 'linux'
           run: |
-            echo "=========================================="
-            echo "INSTALLING NIM (Linux)"
-            echo "=========================================="
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             echo >> /home/runner/.bashrc
             echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/runner/.bashrc
             eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
             brew install nim
             echo "/home/linuxbrew/.linuxbrew/bin" >> $GITHUB_PATH
-            echo "Nim installed successfully"
-            nim --version
-            echo "=========================================="
           shell: bash
 
         - name: Install Nim (macOS)
           if: env.os == 'macos'
           run: |
-            echo "=========================================="
-            echo "INSTALLING NIM (macOS)"
-            echo "=========================================="
             brew update
             brew install nim
-            echo "Nim installed successfully"
-            nim --version
-            echo "=========================================="
           shell: bash
 
         - name: Install Nim (Windows)
           if: env.os == 'windows'
           run: |
-            echo "=========================================="
-            echo "INSTALLING NIM (Windows)"
-            echo "=========================================="
             mkdir nim
             curl -L https://nim-lang.org/download/nim-2.2.6_x64.zip -o nim.zip
             7z x nim.zip -onim
             rm nim.zip
-            echo "Nim downloaded and extracted"
-            ls -la nim/
-            echo "=========================================="
           shell: msys2 {0}
 
         - name: Bundle (Linux/macOS/Windows)
           if: env.os != 'freebsd'
           shell: ${{ env.os == 'windows' && 'msys2 {0}' || 'bash' }}
           run: |
-            echo "=========================================="
-            echo "BUNDLING (NON-FREEBSD)"
-            echo "=========================================="
-            echo "Working directory: $(pwd)"
-            echo "Target OS: ${{ env.os }}"
-            echo "Target Arch: ${{ env.arch }}"
-            echo "Entry file: ${{ inputs.entry }}"
-            echo "Target name: ${{ inputs.target }}"
-            echo "Version: ${{ inputs.version }}"
-            echo "Release mode: ${{ inputs.release }}"
-            
             cd $GITHUB_WORKSPACE
-            echo "Changed to workspace: $(pwd)"
             
             if [ "${{ env.os }}" = "windows" ]; then
                 export PATH="${{ github.workspace }}/nim/nim-2.2.6/bin":$PATH
-                echo "Windows PATH updated: $PATH"
             fi
             
-            echo "Checking arturo..."
-            which arturo || echo "arturo not in PATH"
-            arturo --version || echo "Can't run arturo"
-            
             # Bundle
-            echo "Starting bundle process..."
             if [ "${{ inputs.target }}" = "auto" ]; then
-                echo "Auto-detecting executable name from entry file"
                 arturo --bundle ${{ inputs.entry }}
                 entry="${{ inputs.entry }}"
                 xbase=${entry##*/}
                 EXEFILE=${xbase%.*}
-                echo "EXEFILE determined as: $EXEFILE"
                 if [ "${{ env.os }}" != "windows" ]; then
                     chmod +x $EXEFILE
-                    echo "Made executable: $EXEFILE"
                 fi
             else
-                echo "Using specified target name: ${{ inputs.target }}"
                 arturo --bundle --as:${{ inputs.target }} ${{ inputs.entry }}
                 EXEFILE="${{ inputs.target }}"
-                echo "EXEFILE set to: $EXEFILE"
                 if [ "${{ env.os }}" != "windows" ]; then
                     chmod +x $EXEFILE
-                    echo "Made executable: $EXEFILE"
                 fi
-            fi
-            
-            # Check if executable was created
-            if [ "${{ env.os }}" = "windows" ]; then
-                ls -la ${EXEFILE}.exe || echo "ERROR: ${EXEFILE}.exe not found!"
-            else
-                ls -la $EXEFILE || echo "ERROR: $EXEFILE not found!"
             fi
             
             # Determine names
-            if [ "${{ env.arch }}" = "arm64" ]; then
-                ARCHNAME="arm64"
-            else
-                ARCHNAME="amd64"
-            fi
-            echo "Architecture name: $ARCHNAME"
+            OSNAME=$(arturo --evaluate "print lower {${{ env.os }}}")
             
             if [ "${{ inputs.version }}" != "" ]; then
                 VERSION="-${{ inputs.version }}"
             else
                 VERSION=""
             fi
-            echo "Version string: '$VERSION'"
             
-            OSNAME=$(arturo --evaluate "print lower {${{ env.os }}}")
-            echo "OS name: $OSNAME"
-            
-            FILENAME="${EXEFILE}${VERSION}-${ARCHNAME}-${OSNAME}"
-            echo "Final artifact name: $FILENAME"
+            FILENAME="${EXEFILE}${VERSION}-${OSNAME}-${{ env.arch }}"
             
             # Create artifact directory
-            echo "Creating artifact directory: $FILENAME"
             mkdir -p $FILENAME
             if [ "${{ env.os }}" = "windows" ]; then
                 cp ${EXEFILE}.exe $FILENAME/
-                echo "Copied ${EXEFILE}.exe to $FILENAME/"
             else
                 cp $EXEFILE $FILENAME/
-                echo "Copied $EXEFILE to $FILENAME/"
             fi
             
-            echo "Artifact directory contents:"
-            ls -lah $FILENAME/
-            
             if [ "${{ inputs.release }}" = "true" ]; then
-                echo "Creating release archive..."
                 if [ "${{ env.os }}" = "windows" ]; then
                     7z a $FILENAME.zip $FILENAME
                 else
                     zip -r $FILENAME.zip $FILENAME
                 fi
-                echo "Archive created: $FILENAME.zip"
-                ls -lah $FILENAME.zip
             fi
             
             # Save for upload
             echo "FILENAME=$FILENAME" >> $GITHUB_ENV
-            echo "Saved FILENAME to environment: $FILENAME"
-            echo "=========================================="
 
         - name: Bundle (FreeBSD)
           if: env.os == 'freebsd'
           shell: freebsd {0}
           run: |
-            echo "=========================================="
-            echo "BUNDLING (FREEBSD)"
-            echo "=========================================="
-            echo "Working directory: $(pwd)"
-            echo "Target OS: ${{ env.os }}"
-            echo "Target Arch: ${{ env.arch }}"
-            echo "Entry file: ${{ inputs.entry }}"
-            echo "Target name: ${{ inputs.target }}"
-            echo "Version: ${{ inputs.version }}"
-            echo "Release mode: ${{ inputs.release }}"
-            
-            # Install Nim and Git
-            echo "Installing Nim and Git..."
-            pkg install -y nim git
-            echo "Nim version:"
-            /usr/local/nim/bin/nim --version || echo "Can't run nim!"
-            
             cd $GITHUB_WORKSPACE
-            echo "Changed to workspace: $(pwd)"
-            echo "Workspace contents:"
-            ls -lah
             
+            pkg install -y nim git
             export PATH="/usr/local/nim/bin:$PATH"
-            echo "PATH updated: $PATH"
-            
-            echo "Checking arturo..."
-            which arturo || echo "arturo not in PATH"
-            arturo --version || echo "Can't run arturo"
             
             # Bundle
-            echo "Starting bundle process..."
             if [ "${{ inputs.target }}" = "auto" ]; then
-                echo "Auto-detecting executable name from entry file"
                 arturo --bundle ${{ inputs.entry }}
                 entry="${{ inputs.entry }}"
                 xbase=${entry##*/}
                 EXEFILE=${xbase%.*}
-                echo "EXEFILE determined as: $EXEFILE"
                 chmod +x $EXEFILE
-                echo "Made executable: $EXEFILE"
             else
-                echo "Using specified target name: ${{ inputs.target }}"
                 arturo --bundle --as:${{ inputs.target }} ${{ inputs.entry }}
                 EXEFILE="${{ inputs.target }}"
-                echo "EXEFILE set to: $EXEFILE"
                 chmod +x $EXEFILE
-                echo "Made executable: $EXEFILE"
             fi
-            
-            # Check if executable was created
-            ls -la $EXEFILE || echo "ERROR: $EXEFILE not found!"
-            file $EXEFILE || echo "Can't determine file type"
             
             # Determine names
-            if [ "${{ env.arch }}" = "arm64" ]; then
-                ARCHNAME="arm64"
-            else
-                ARCHNAME="amd64"
-            fi
-            echo "Architecture name: $ARCHNAME"
+            OSNAME=$(arturo --evaluate "print lower {freebsd}")
             
             if [ "${{ inputs.version }}" != "" ]; then
                 VERSION="-${{ inputs.version }}"
             else
                 VERSION=""
             fi
-            echo "Version string: '$VERSION'"
             
-            OSNAME=$(arturo --evaluate "print lower {freebsd}")
-            echo "OS name: $OSNAME"
-            
-            FILENAME="${EXEFILE}${VERSION}-${ARCHNAME}-${OSNAME}"
-            echo "Final artifact name: $FILENAME"
+            FILENAME="${EXEFILE}${VERSION}-${OSNAME}-${{ env.arch }}"
             
             # Create artifact directory
-            echo "Creating artifact directory: $FILENAME"
             mkdir -p $FILENAME
             cp $EXEFILE $FILENAME/
-            echo "Copied $EXEFILE to $FILENAME/"
-            
-            echo "Artifact directory contents:"
-            ls -lah $FILENAME/
             
             if [ "${{ inputs.release }}" = "true" ]; then
-                echo "Creating release archive..."
                 zip -r $FILENAME.zip $FILENAME
-                echo "Archive created: $FILENAME.zip"
-                ls -lah $FILENAME.zip
             fi
-            
-            echo "Final workspace contents:"
-            ls -lah
-            echo "=========================================="
 
-        - name: Copy FreeBSD artifacts back to host
+        - name: Copy FreeBSD artifacts to host
           if: env.os == 'freebsd'
           run: |
-            echo "Manually copying FreeBSD artifacts from VM..."
             rsync -av -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-              freebsd:$GITHUB_WORKSPACE/testbundle-*-freebsd* . || true
-            rsync -av -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-              freebsd:$GITHUB_WORKSPACE/testbundle . || true
-            echo "Files after rsync:"
-            ls -lah
-          shell: bash
-
-        - name: Debug - Check workspace (FreeBSD)
-          if: env.os == 'freebsd'
-          run: |
-            echo "=========================================="
-            echo "DEBUG - CHECKING HOST WORKSPACE AFTER FREEBSD BUNDLE"
-            echo "=========================================="
-            echo "Working directory: $(pwd)"
-            echo "Workspace contents:"
-            ls -lah $GITHUB_WORKSPACE
-            echo "Looking for artifact directories:"
-            find $GITHUB_WORKSPACE -maxdepth 1 -type d -name "*freebsd*" || echo "No freebsd directories found"
-            echo "Looking for zip files:"
-            find $GITHUB_WORKSPACE -maxdepth 1 -name "*.zip" || echo "No zip files found"
-            echo "Looking for executables:"
-            find $GITHUB_WORKSPACE -maxdepth 1 -type f -executable || echo "No executables found"
-            echo "=========================================="
+              freebsd:$GITHUB_WORKSPACE/*-freebsd-* . || true
           shell: bash
 
         - name: Upload Artifact
           uses: actions/upload-artifact@v4
           with:
-            name: ${{ env.os == 'freebsd' && 'freebsd-bundle' || env.FILENAME }}
-            path: |
-              ${{ env.os == 'freebsd' && format('*-{0}-freebsd/', env.arch) || format('{0}/', env.FILENAME) }}
-              ${{ env.os == 'freebsd' && format('*-{0}-freebsd.zip', env.arch) || format('{0}.zip', env.FILENAME) }}
-            if-no-files-found: warn
+            name: ${{ env.FILENAME }}
+            path: ${{ env.FILENAME }}${{ inputs.release == 'true' && '.zip' || '' }}
