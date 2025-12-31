@@ -51,6 +51,7 @@ jobs:
                 os: ${{ matrix.os }}
                 arch: ${{ matrix.arch }}
                 entry: tests/testbundle.art
+                release: 'true'
                 version: 1.0.0
 
             - name: Run tests
