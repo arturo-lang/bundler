@@ -174,11 +174,13 @@ runs:
                 fi
             fi
             
-            # Save FILENAME for host (FreeBSD needs this for rsync)
+            # Save for later steps
             if [ "${{ env.os }}" = "freebsd" ]; then
                 echo "$FILENAME" > .bundler_filename
+                echo "$EXEFILE" > .bundler_exefile
             else
                 echo "FILENAME=$FILENAME" >> $GITHUB_ENV
+                echo "EXEFILE=$EXEFILE" >> $GITHUB_ENV
                 echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
             fi
 
@@ -191,11 +193,21 @@ runs:
         - name: Copy FreeBSD artifacts to host
           if: env.os == 'freebsd'
           run: |
+            # First, copy metadata files
             rsync -av -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-              freebsd:$GITHUB_WORKSPACE/testbundle* freebsd:$GITHUB_WORKSPACE/.bundler_filename . || true
+              freebsd:$GITHUB_WORKSPACE/.bundler_exefile freebsd:$GITHUB_WORKSPACE/.bundler_filename . || true
             
+            # Read the metadata
+            EXEFILE=$(cat .bundler_exefile)
             FILENAME=$(cat .bundler_filename)
+            
+            # Now copy the actual artifacts using the metadata
+            rsync -av -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+              freebsd:$GITHUB_WORKSPACE/${EXEFILE}* . || true
+            
+            # Set environment for subsequent steps
             echo "FILENAME=$FILENAME" >> $GITHUB_ENV
+            echo "EXEFILE=$EXEFILE" >> $GITHUB_ENV
             echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
           shell: bash
 
