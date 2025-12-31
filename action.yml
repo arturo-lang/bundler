@@ -104,28 +104,16 @@ runs:
             rm nim.zip
           shell: msys2 {0}
 
-        - name: Install Nim (FreeBSD)
-          if: env.os == 'freebsd'
-          run: |
-            pkg install -y nim
-          shell: freebsd {0}
-
         - name: Bundle
           shell: ${{ (env.os == 'freebsd') && 'freebsd {0}' || (env.os == 'windows') && 'msys2 {0}' || 'bash' }}
           run: |
-            if [ "${{ env.os }}" = "windows" ]; then
-                export PATH="${{ github.workspace }}/nim/nim-2.2.6/bin":$PATH
+            # Install Nim if on FreeBSD (must be in same step to persist in VM)
+            if [ "${{ env.os }}" = "freebsd" ]; then
+                pkg install -y nim
             fi
             
-            if [ "${{ env.os }}" = "freebsd" ]; then
-                export PATH="/usr/local/bin:$PATH"
-                # Debug: check if nim is actually there and in PATH
-                echo "DEBUG: Checking nim location..."
-                which nim || echo "nim not in PATH!"
-                ls -la /usr/local/bin/nim || echo "nim not in /usr/local/bin!"
-                echo "DEBUG: Current PATH: $PATH"
-                # Try running nim directly
-                /usr/local/bin/nim --version || echo "Can't run nim directly!"
+            if [ "${{ env.os }}" = "windows" ]; then
+                export PATH="${{ github.workspace }}/nim/nim-2.2.6/bin":$PATH
             fi
             
             if [ "${{ inputs.target }}" = "auto" ]; then
