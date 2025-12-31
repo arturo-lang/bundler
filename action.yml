@@ -110,20 +110,7 @@ runs:
             # Install Nim if on FreeBSD
             if [ "${{ env.os }}" = "freebsd" ]; then
                 pkg install -y nim
-                
-                # Debug: Find where nim actually is
-                echo "=== FINDING NIM ==="
-                find /usr -name nim 2>/dev/null || echo "nim binary not found!"
-                echo "=== CHECKING /usr/local/bin ==="
-                ls -la /usr/local/bin/ | grep nim || echo "no nim in /usr/local/bin"
-                echo "=== CHECKING PKG INFO ==="
-                pkg info -l nim | grep bin || echo "no binaries listed"
-                echo "=== PATH ==="
-                echo $PATH
-                echo "=== WHICH NIM ==="
-                which nim || echo "which can't find nim"
-                echo "=== TRYING TO RUN NIM ==="
-                nim --version || echo "can't run nim"
+                export PATH="/usr/local/nim/bin:$PATH"
             fi
             
             if [ "${{ env.os }}" = "windows" ]; then
