@@ -21,7 +21,7 @@
 
 The most barebones configuration would be:
 ```yaml
-- uses: arturo-lang/bundler@main
+- uses: arturo-lang/bundler@v2
   with: 
     token: ${{ secrets.GITHUB_TOKEN }}
     entry: yourscript.art
