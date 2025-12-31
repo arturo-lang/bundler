@@ -158,7 +158,7 @@ runs:
           run: |
             cd $GITHUB_WORKSPACE
             
-            pkg install -y nim git
+            pkg install -y nim git zip
             export PATH="/usr/local/nim/bin:$PATH"
             
             # Bundle
