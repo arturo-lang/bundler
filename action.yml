@@ -107,9 +107,23 @@ runs:
         - name: Bundle
           shell: ${{ (env.os == 'freebsd') && 'freebsd {0}' || (env.os == 'windows') && 'msys2 {0}' || 'bash' }}
           run: |
-            # Install Nim if on FreeBSD (must be in same step to persist in VM)
+            # Install Nim if on FreeBSD
             if [ "${{ env.os }}" = "freebsd" ]; then
                 pkg install -y nim
+                
+                # Debug: Find where nim actually is
+                echo "=== FINDING NIM ==="
+                find /usr -name nim 2>/dev/null || echo "nim binary not found!"
+                echo "=== CHECKING /usr/local/bin ==="
+                ls -la /usr/local/bin/ | grep nim || echo "no nim in /usr/local/bin"
+                echo "=== CHECKING PKG INFO ==="
+                pkg info -l nim | grep bin || echo "no binaries listed"
+                echo "=== PATH ==="
+                echo $PATH
+                echo "=== WHICH NIM ==="
+                which nim || echo "which can't find nim"
+                echo "=== TRYING TO RUN NIM ==="
+                nim --version || echo "can't run nim"
             fi
             
             if [ "${{ env.os }}" = "windows" ]; then
