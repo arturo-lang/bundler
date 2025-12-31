@@ -107,6 +107,9 @@ runs:
         - name: Bundle
           shell: ${{ (env.os == 'freebsd') && 'freebsd {0}' || (env.os == 'windows') && 'msys2 {0}' || 'bash' }}
           run: |
+            # Change to workspace directory first!
+            cd $GITHUB_WORKSPACE
+
             # Install Nim if on FreeBSD
             if [ "${{ env.os }}" = "freebsd" ]; then
                 pkg install -y nim git
