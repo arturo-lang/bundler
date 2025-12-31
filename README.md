@@ -20,7 +20,6 @@
 ### 🌵 How do I use it?
 
 The most barebones configuration would be:
-
 ```yaml
 - uses: arturo-lang/bundler@main
   with: 
@@ -31,25 +30,32 @@ The most barebones configuration would be:
 > [!TIP]
 > The `entry` field represents your app's "entry point" - that is the initial script. Whether it imports other files/scripts or not doesn't matter, since it will - hopefully - be taken care of automatically. Also, you may choose to set the whole folder (in case it's an Arturo *package*) as the entry point: if it is a package with an `info.art` file that declares an `executable:`, it will work as well! 😜
 
-Based on the runner, the action will compile and setup the appropriate, native binary:
+Based on the runner and the specified OS/architecture, the action will compile and setup the appropriate native binary.
 
-| runner | binary |
-|--------|--------|
-| ubuntu-latest | amd64 / Linux |
-| macos-13 | amd64 / macOS |
-| macos-latest | arm64 (M1) / macOS |
-| windows-latest | amd64 / Windows |
+#### Supported platforms
+
+| OS | Architecture | Runner |
+|--------|--------|--------|
+| Linux | amd64 | ubuntu-latest |
+| Linux | arm64 | ubuntu-24.04-arm |
+| macOS | amd64 | macos-15-intel |
+| macOS | arm64 | macos-latest |
+| Windows | amd64 | windows-latest |
+| FreeBSD | amd64 | ubuntu-latest |
 
 #### More options
 
 | option | description |
 |--------|-------------|
+| os | target OS (linux, windows, macos, freebsd) - defaults to auto-detect from runner |
+| arch | target architecture (amd64, arm64, native) - defaults to `'native'` (auto-detect from runner) |
 | target | change the name of the final binary (default: `'auto'` = use the same name as the entry script) |
 | version | set version number, to be included in the archive names - in the case of releases, this will be extracted automatically from the release tag (default: `''`) |
+| release | prepare for release: creates a `.zip` archive with the binary (default: `'false'`) |
 
 ### 🔥 How can I release an app?
 
-With Arturo's bundler and the appropriate setup, you can instantly offer binaries for all major OSes, as part of your GitHub repo's workflows.
+With Arturo's bundler and the appropriate setup, you can instantly offer binaries for all major OSes and architectures, as part of your GitHub repo's workflows.
 
 But, panic not! We've got you covered! 😉
 
@@ -69,7 +75,7 @@ Actually it's very streamlined and easy:
 
 And done! 💥
 
-Next time you push a new `vX.Y.Z` tag, a new release will be automatically created, along with all the binaries of your app for Linux/macOS/Windows (and more coming?).
+Next time you push a new `vX.Y.Z` tag, a new release will be automatically created, along with all the binaries of your app for **Linux (amd64, arm64), macOS (amd64, arm64), Windows (amd64), and FreeBSD (amd64)**.
 
 Sounds amazing? It actually *is*! 🚀
 
@@ -91,7 +97,7 @@ And... ready to rock'n'roll!
 
 MIT License
 
-Copyright (c) 2024 Yanis Zafirópulos (aka Dr.Kameleon)
+Copyright (c) 2025 Yanis Zafirópulos (aka Dr.Kameleon)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
