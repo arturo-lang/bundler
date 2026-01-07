@@ -80,7 +80,7 @@ runs:
         ######################################
 
         - name: Install Arturo
-          uses: arturo-lang/arturo-action@main
+          uses: arturo-lang/setup-arturo@v2
           with: 
             token: ${{ inputs.token }}
             os: ${{ env.os }}
