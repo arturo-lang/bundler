@@ -90,6 +90,8 @@ runs:
             token: ${{ inputs.token }}
             os: ${{ env.os }}
             arch: ${{ env.arch }}
+            do: ${{ inputs.from == 'master' && 'compile' || 'fetch' }}
+            from: ${{ inputs.from == 'master' && 'stable' || inputs.from }}
 
         - name: Install Nim (Linux)
           if: env.os == 'linux'
