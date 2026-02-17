@@ -49,6 +49,7 @@ Based on the runner and the specified OS/architecture, the action will compile a
 |--------|-------------|
 | os | target OS (linux, windows, macos, freebsd) - defaults to auto-detect from runner |
 | arch | target architecture (amd64, arm64, native) - defaults to `'native'` (auto-detect from runner) |
+| from | Arturo source to use: `'stable'` (official release), `'latest'` (nightly), `'master'` (compile from source) - defaults to `'stable'` |
 | target | change the name of the final binary (default: `'auto'` = use the same name as the entry script) |
 | version | set version number, to be included in the archive names - in the case of releases, this will be extracted automatically from the release tag (default: `''`) |
 | release | prepare for release: creates a `.zip` archive with the binary (default: `'false'`) |
