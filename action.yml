@@ -18,6 +18,11 @@ inputs:
             The architecture to build for.
             (one of: 'amd64', 'arm64', 'native')
         default: 'native'
+    from:
+        description: >-
+            Arturo source (stable, latest, master).
+            stable = latest official release, latest = nightly, master = compile from source.
+        default: 'stable'
     entry: 
         description: >-
             Entry file for the executable.
@@ -85,6 +90,8 @@ runs:
             token: ${{ inputs.token }}
             os: ${{ env.os }}
             arch: ${{ env.arch }}
+            do: ${{ inputs.from == 'master' && 'compile' || 'fetch' }}
+            from: ${{ inputs.from == 'master' && 'stable' || inputs.from }}
 
         - name: Install Nim (Linux)
           if: env.os == 'linux'
