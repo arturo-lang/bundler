@@ -115,7 +115,7 @@ runs:
           if: env.os == 'windows'
           run: |
             mkdir nim
-            curl -L https://nim-lang.org/download/nim-2.2.8_x64.zip -o nim.zip
+            curl -L https://nim-lang.org/download/nim-2.2.10_x64.zip -o nim.zip
             7z x nim.zip -onim
             rm nim.zip
           shell: msys2 {0}
@@ -139,7 +139,7 @@ runs:
             
             # Set up PATH for different platforms
             if [ "${{ env.os }}" = "windows" ]; then
-                export PATH="${{ github.workspace }}/nim/nim-2.2.8/bin":$PATH
+                export PATH="${{ github.workspace }}/nim/nim-2.2.10/bin":$PATH
             elif [ "${{ env.os }}" = "freebsd" ]; then
                 export PATH="/usr/local/nim/bin:$PATH"
             fi
